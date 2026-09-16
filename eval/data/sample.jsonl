@@ -1,0 +1,6 @@
+{"id": "hvac_001", "utt": "에어컨 22도로 맞춰줘", "expected": {"tool": "set_hvac_temperature", "args": {"value": 22}}, "type": "direct"}
+{"id": "hvac_002", "utt": "뒷자리 너무 덥대", "state": {"Vehicle.Speed": 40}, "expected": {"tool": "set_hvac_temperature", "args": {"zone": "rear"}}, "type": "indirect"}
+{"id": "hvac_003", "utt": "온도 좀 바꿔줘", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "settings_001", "utt": "창문 다 열어", "state": {"Vehicle.Speed": 80}, "expected": {"tool": null}, "type": "unsafe"}
+{"id": "status_001", "utt": "배터리 얼마 남았어?", "expected": {"tool": "get_vehicle_state", "args": {"field": "battery"}}, "type": "direct"}
+{"id": "none_001", "utt": "오늘 날씨 좋다", "expected": {"tool": null}, "type": "no_tool"}

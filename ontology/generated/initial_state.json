@@ -1,0 +1,19 @@
+{
+  "Vehicle.Cabin.Door.Row1.DriverSide.Window.Position": 0,
+  "Vehicle.Cabin.Door.Row1.PassengerSide.Window.Position": 0,
+  "Vehicle.Cabin.Door.Row2.DriverSide.Window.Position": 0,
+  "Vehicle.Cabin.Door.Row2.PassengerSide.Window.Position": 0,
+  "Vehicle.Cabin.HVAC.Station.Row1.Driver.FanSpeed": 40,
+  "Vehicle.Cabin.HVAC.Station.Row1.Driver.Temperature": 22,
+  "Vehicle.Cabin.HVAC.Station.Row1.Passenger.FanSpeed": 40,
+  "Vehicle.Cabin.HVAC.Station.Row1.Passenger.Temperature": 22,
+  "Vehicle.Cabin.HVAC.Station.Row2.Driver.FanSpeed": 40,
+  "Vehicle.Cabin.HVAC.Station.Row2.Driver.Temperature": 22,
+  "Vehicle.Cabin.Infotainment.Media.Action": "STOP",
+  "Vehicle.IsMoving": false,
+  "Vehicle.LowVoltageSystemState": "ON",
+  "Vehicle.Powertrain.Range": 245000,
+  "Vehicle.Powertrain.TractionBattery.StateOfCharge.Displayed": 68,
+  "Vehicle.Powertrain.Type": "ELECTRIC",
+  "Vehicle.Speed": 0
+}

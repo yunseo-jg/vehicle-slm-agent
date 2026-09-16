@@ -1,0 +1,37 @@
+[project]
+name = "vehicle-slm-agent"
+version = "0.1.0"
+description = "온디바이스 SLM 기반 tool-calling 에이전트 (차량 도메인)"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0",
+    "mcp>=2.0",
+    "langgraph>=0.2",
+    "langchain-core>=0.3",
+    "langchain-mcp-adapters>=0.1",
+]
+
+[project.optional-dependencies]
+# 클라우드 베이스라인. 쓰는 것만 설치: uv sync --extra cloud
+cloud = ["langchain-openai>=0.2", "langchain-anthropic>=0.2", "langchain-google-genai>=2.0"]
+# 로컬 모델 (7주차~)
+local = ["langchain-ollama>=0.2"]
+# 트레이싱 (8주차~)
+trace = ["langfuse>=2.0"]
+# 매뉴얼 RAG 도구
+rag = ["chromadb>=0.5", "pypdf>=4.0"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

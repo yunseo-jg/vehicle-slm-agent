@@ -1,0 +1,186 @@
+[
+  {
+    "name": "set_hvac_temperature",
+    "domain": "hvac",
+    "description": "Set the cabin temperature for one seat zone. Use when the user asks to change, raise, or lower the temperature. Do not use for fan speed or turning A/C on/off.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "zone": {
+          "type": "string",
+          "enum": [
+            "driver",
+            "passenger",
+            "rear"
+          ],
+          "default": "driver",
+          "description": "default: driver"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 30,
+          "description": "unit: Celsius"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.HVAC.Station.{zone}.Temperature",
+    "ext": false
+  },
+  {
+    "name": "set_hvac_fan_speed",
+    "domain": "hvac",
+    "description": "Set fan speed (0-100 percent) for one seat zone. Use for wind strength requests. Do not use for temperature.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "zone": {
+          "type": "string",
+          "enum": [
+            "driver",
+            "passenger",
+            "rear"
+          ],
+          "default": "driver",
+          "description": "default: driver"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "unit: percent"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.HVAC.Station.{zone}.FanSpeed",
+    "ext": false
+  },
+  {
+    "name": "set_media_action",
+    "domain": "media",
+    "description": "Control media playback: play, stop, skip forward, skip backward. Do not use for volume.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "PLAY",
+            "STOP",
+            "SKIP_FORWARD",
+            "SKIP_BACKWARD"
+          ]
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.Infotainment.Media.Action",
+    "ext": false
+  },
+  {
+    "name": "set_window_position",
+    "domain": "settings",
+    "description": "Open or close a window to a position (0 closed, 100 fully open). Not allowed while the vehicle is moving above 60 km/h.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "window": {
+          "type": "string",
+          "enum": [
+            "driver",
+            "passenger",
+            "rear_left",
+            "rear_right"
+          ],
+          "default": "driver",
+          "description": "default: driver"
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "unit: percent"
+        }
+      },
+      "required": [
+        "position"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on",
+      "speed_below_60"
+    ],
+    "vss": "Vehicle.Cabin.Door.{window}.Window.Position",
+    "ext": false
+  },
+  {
+    "name": "get_vehicle_state",
+    "domain": "status",
+    "description": "Read a vehicle status value such as battery level, range, or speed. Use for questions, not for changing anything.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string",
+          "enum": [
+            "battery",
+            "range",
+            "speed"
+          ]
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [],
+    "vss": {
+      "battery": "Vehicle.Powertrain.TractionBattery.StateOfCharge.Displayed",
+      "range": "Vehicle.Powertrain.Range",
+      "speed": "Vehicle.Speed"
+    },
+    "ext": false
+  },
+  {
+    "name": "search_manual",
+    "domain": "phone_manual",
+    "description": "Search the owner's manual for explanations of warning lights, features, or maintenance. Use when the user asks what something means or how a feature works.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [],
+    "vss": null,
+    "ext": true
+  }
+]

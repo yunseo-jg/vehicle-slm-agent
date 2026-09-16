@@ -1,0 +1,109 @@
+# 차량 기능 사전. 도구 스키마와 시뮬레이터 초기 상태의 유일한 원천.
+# 바꿨으면 `make schema` 후 생성물까지 같은 PR에 포함.
+# VSS 경로는 vss.json(6.0)에 실제로 있는 것만. 없는 기능은 vss: null, ext: true
+
+version: "0.1"
+vss_version: "6.0"
+
+# 파라미터 값 → VSS instance 이름. 도구에는 왼쪽(짧은 값)만 노출한다.
+instance_map:
+  zone:
+    driver: Row1.Driver
+    passenger: Row1.Passenger
+    rear: Row2.Driver
+  window:
+    driver: Row1.DriverSide
+    passenger: Row1.PassengerSide
+    rear_left: Row2.DriverSide
+    rear_right: Row2.PassengerSide
+
+# precondition 종류 (sim/state.py 에서 검사)
+#   power_on        LowVoltageSystemState in [ON, START]
+#   parked          Vehicle.Speed == 0
+#   speed_below_N   Vehicle.Speed < N
+
+# 시뮬레이터 초기 상태에 들어갈 상태 신호 (도구와 무관하게 항상 존재)
+state_signals:
+  Vehicle.LowVoltageSystemState: "ON"
+  Vehicle.Speed: 0
+  Vehicle.IsMoving: false
+  Vehicle.Powertrain.Type: "ELECTRIC"
+
+functions:
+  - id: set_hvac_temperature
+    domain: hvac
+    description: >-
+      Set the cabin temperature for one seat zone. Use when the user asks to change,
+      raise, or lower the temperature. Do not use for fan speed or turning A/C on/off.
+    vss: Vehicle.Cabin.HVAC.Station.{zone}.Temperature
+    params:
+      zone: {type: enum, values: [driver, passenger, rear], default: driver}
+      value: {type: int, min: 16, max: 30, unit: Celsius, required: true}
+    precondition: [power_on]
+    initial: 22
+    ko: ["에어컨 22도로", "온도 좀 올려줘", "뒷자리 너무 덥대", "시원하게 해줘"]
+
+  - id: set_hvac_fan_speed
+    domain: hvac
+    description: >-
+      Set fan speed (0-100 percent) for one seat zone. Use for wind strength requests.
+      Do not use for temperature.
+    vss: Vehicle.Cabin.HVAC.Station.{zone}.FanSpeed
+    params:
+      zone: {type: enum, values: [driver, passenger, rear], default: driver}
+      value: {type: int, min: 0, max: 100, unit: percent, required: true}
+    precondition: [power_on]
+    initial: 40
+    ko: ["바람 세게", "풍량 약하게", "바람 좀 줄여"]
+
+  - id: set_media_action
+    domain: media
+    description: >-
+      Control media playback: play, stop, skip forward, skip backward.
+      Do not use for volume.
+    vss: Vehicle.Cabin.Infotainment.Media.Action
+    params:
+      action: {type: enum, values: [PLAY, STOP, SKIP_FORWARD, SKIP_BACKWARD], required: true}
+    precondition: [power_on]
+    initial: STOP
+    ko: ["음악 틀어줘", "다음 곡", "노래 꺼"]
+
+  - id: set_window_position
+    domain: settings
+    description: >-
+      Open or close a window to a position (0 closed, 100 fully open).
+      Not allowed while the vehicle is moving above 60 km/h.
+    vss: Vehicle.Cabin.Door.{window}.Window.Position
+    params:
+      window: {type: enum, values: [driver, passenger, rear_left, rear_right], default: driver}
+      position: {type: int, min: 0, max: 100, unit: percent, required: true}
+    precondition: [power_on, speed_below_60]
+    initial: 0
+    ko: ["창문 열어", "운전석 창문 반만", "창문 다 닫아"]
+
+  - id: get_vehicle_state
+    domain: status
+    description: >-
+      Read a vehicle status value such as battery level, range, or speed.
+      Use for questions, not for changing anything.
+    vss:
+      battery: Vehicle.Powertrain.TractionBattery.StateOfCharge.Displayed
+      range: Vehicle.Powertrain.Range
+      speed: Vehicle.Speed
+    params:
+      field: {type: enum, values: [battery, range, speed], required: true}
+    precondition: []
+    initial: {battery: 68, range: 245000, speed: 0}
+    ko: ["배터리 얼마나 남았어", "얼마나 더 갈 수 있어", "지금 몇 킬로로 가고 있어"]
+
+  - id: search_manual
+    domain: phone_manual
+    ext: true
+    vss: null
+    description: >-
+      Search the owner's manual for explanations of warning lights, features, or maintenance.
+      Use when the user asks what something means or how a feature works.
+    params:
+      query: {type: string, required: true}
+    precondition: []
+    ko: ["이 경고등 뭐야", "타이어 공기압 경고 뜨면 어떻게 해", "크루즈 컨트롤 어떻게 켜"]

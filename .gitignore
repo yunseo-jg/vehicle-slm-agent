@@ -1,0 +1,34 @@
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# data / models
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+*.gguf
+*.safetensors
+*.bin
+training/checkpoints/
+training/outputs/
+
+# eval run artifacts (결과 요약은 reports/에 남긴다)
+eval/runs/
+
+# tools
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.DS_Store

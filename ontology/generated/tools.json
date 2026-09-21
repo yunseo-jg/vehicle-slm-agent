@@ -98,6 +98,91 @@
     "ext": false
   },
   {
+    "name": "set_media_volume",
+    "domain": "media",
+    "description": "Set the media playback volume from 0 to 100 percent. Do not use for playback control or vehicle alert volume.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "unit: percent"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.Infotainment.Media.Volume",
+    "ext": false
+  },
+  {
+    "name": "set_media_source",
+    "domain": "media",
+    "description": "Select the media source for playback. Use only for AM, FM, USB, Bluetooth, or internet media, not for playback actions.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "AM",
+            "FM",
+            "USB",
+            "BLUETOOTH",
+            "INTERNET"
+          ]
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.Infotainment.Media.Played.Source",
+    "ext": false
+  },
+  {
+    "name": "get_media_info",
+    "domain": "media",
+    "description": "Read the album, artist, or track of the media currently playing. Use for media information, not for changing playback.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string",
+          "enum": [
+            "album",
+            "artist",
+            "track"
+          ]
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": {
+      "album": "Vehicle.Cabin.Infotainment.Media.Played.Album",
+      "artist": "Vehicle.Cabin.Infotainment.Media.Played.Artist",
+      "track": "Vehicle.Cabin.Infotainment.Media.Played.Track"
+    },
+    "ext": false
+  },
+  {
     "name": "set_window_position",
     "domain": "settings",
     "description": "Open or close a window to a position (0 closed, 100 fully open). Not allowed while the vehicle is moving above 60 km/h.",

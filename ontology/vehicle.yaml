@@ -66,7 +66,46 @@ functions:
       action: {type: enum, values: [PLAY, STOP, SKIP_FORWARD, SKIP_BACKWARD], required: true}
     precondition: [power_on]
     initial: STOP
-    ko: ["음악 틀어줘", "다음 곡", "노래 꺼"]
+    ko: ["음악 틀어줘", "노래 멈춰줘", "다음 곡으로 넘겨줘", "이전 곡 틀어줘"]
+
+  - id: set_media_volume
+    domain: media
+    description: >-
+      Set the media playback volume from 0 to 100 percent.
+      Do not use for playback control or vehicle alert volume.
+    vss: Vehicle.Cabin.Infotainment.Media.Volume
+    params:
+      value: {type: int, min: 0, max: 100, unit: percent, required: true}
+    precondition: [power_on]
+    initial: 40
+    ko: ["볼륨 30으로 해줘", "음량 50으로 맞춰줘", "소리 꺼줘", "볼륨 좀 높여줘"]
+
+  - id: set_media_source
+    domain: media
+    description: >-
+      Select the media source for playback. Use only for AM, FM, USB, Bluetooth,
+      or internet media, not for playback actions.
+    vss: Vehicle.Cabin.Infotainment.Media.Played.Source
+    params:
+      source: {type: enum, values: [AM, FM, USB, BLUETOOTH, INTERNET], required: true}
+    precondition: [power_on]
+    initial: BLUETOOTH
+    ko: ["라디오 FM으로 바꿔줘", "블루투스로 재생해줘", "USB 음악으로 전환해줘", "인터넷 음악 틀어줘"]
+
+  - id: get_media_info
+    domain: media
+    description: >-
+      Read the album, artist, or track of the media currently playing.
+      Use for media information, not for changing playback.
+    vss:
+      album: Vehicle.Cabin.Infotainment.Media.Played.Album
+      artist: Vehicle.Cabin.Infotainment.Media.Played.Artist
+      track: Vehicle.Cabin.Infotainment.Media.Played.Track
+    params:
+      field: {type: enum, values: [album, artist, track], required: true}
+    precondition: [power_on]
+    initial: {album: "Vehicle Demo", artist: "KUBIG", track: "Demo Track"}
+    ko: ["지금 무슨 노래야", "가수가 누구야", "현재 앨범 알려줘", "재생 중인 곡 제목 알려줘"]
 
   - id: set_window_position
     domain: settings

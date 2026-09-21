@@ -16,6 +16,17 @@ instance_map:
     passenger: Row1.PassengerSide
     rear_left: Row2.DriverSide
     rear_right: Row2.PassengerSide
+  # door 는 상태 펼치기용. 도구 파라미터 door 의 all/rear 는 구현에서 여러 문으로 매핑한다
+  door:
+    driver: Row1.DriverSide
+    passenger: Row1.PassengerSide
+    rear_left: Row2.DriverSide
+    rear_right: Row2.PassengerSide
+  seat:
+    driver: Row1.DriverSide
+    passenger: Row1.PassengerSide
+    rear_left: Row2.DriverSide
+    rear_right: Row2.PassengerSide
 
 # precondition 종류 (sim/state.py 에서 검사)
 #   power_on        LowVoltageSystemState in [ON, START]
@@ -68,18 +79,71 @@ functions:
     initial: STOP
     ko: ["음악 틀어줘", "다음 곡", "노래 꺼"]
 
+  # ---- settings (차량설정) ----
+  # 예시 발화는 AI Hub 008 차량 명령어 데이터의 말투(반말 명령형, 숫자 없음, 전체/조수석/뒷자리 구분)를 참고해 새로 쓴 문장
   - id: set_window_position
     domain: settings
     description: >-
-      Open or close a window to a position (0 closed, 100 fully open).
-      Not allowed while the vehicle is moving above 60 km/h.
+      Open or close windows to a position (0 closed, 100 fully open). Use for any request
+      to open, close, lower, or raise a window. Do not use for doors or the sunroof.
     vss: Vehicle.Cabin.Door.{window}.Window.Position
     params:
-      window: {type: enum, values: [driver, passenger, rear_left, rear_right], default: driver}
+      window: {type: enum, values: [all, driver, passenger, rear_left, rear_right], default: driver}
       position: {type: int, min: 0, max: 100, unit: percent, required: true}
     precondition: [power_on, speed_below_60]
     initial: 0
-    ko: ["창문 열어", "운전석 창문 반만", "창문 다 닫아"]
+    ko: ["창문 열어줘", "조수석 창문 끝까지 내려", "창문 전부 닫아줄래", "운전석 창문 조금만 열어", "환기 좀 하자", "터널 들어가니까 창문 올려"]
+
+  - id: set_door_lock
+    domain: settings
+    description: >-
+      Lock or unlock doors. Use when the user asks to lock, unlock, open, or close a car door.
+      Do not use for windows or the trunk.
+    vss: Vehicle.Cabin.Door.{door}.IsLocked
+    params:
+      door: {type: enum, values: [all, driver, passenger, rear], default: all}
+      locked: {type: bool, required: true}
+    precondition: []
+    initial: false
+    ko: ["문 잠가줘", "차 문 전부 열어줘", "뒷자리 문 열어", "조수석 문 잠궈줄래", "다 탔으니까 잠가", "잠금 풀어줘"]
+
+  - id: set_seat_climate
+    domain: settings
+    description: >-
+      Turn seat heating or ventilation on or off for one seat, with a level from 1 to 3.
+      Use for seat warmer or cooling seat requests. Do not use for cabin air temperature.
+    vss: Vehicle.Cabin.Seat.{seat}.HeatingCooling
+    params:
+      seat: {type: enum, values: [driver, passenger, rear_left, rear_right], default: driver}
+      mode: {type: enum, values: [HEAT, COOL, "OFF"], required: true}  # OFF 는 YAML 불리언이라 따옴표 필수
+      level: {type: int, min: 1, max: 3, default: 2}
+    precondition: [power_on]
+    initial: 0
+    ko: ["시트 열선 켜줘", "조수석 통풍 시트 틀어", "엉덩이 좀 따뜻하게 해줘", "시트 바람 세게", "열선 꺼", "의자 시원하게 해줄래"]
+
+  - id: set_hazard_lights
+    domain: settings
+    description: >-
+      Turn the hazard warning lights on or off. Use when the user mentions hazard lights or
+      an emergency stop signal. Do not use for headlights or turn signals.
+    vss: Vehicle.Body.Lights.Hazard.IsSignaling
+    params:
+      is_on: {type: bool, required: true}
+    precondition: []
+    initial: false
+    ko: ["비상등 켜줘", "비상등 꺼", "깜빡이 비상으로 켜봐", "앞에 사고 났나 봐 비상등", "이제 비상등 그만"]
+
+  - id: set_horn
+    domain: settings
+    description: >-
+      Sound or stop the horn. Use when the user asks to honk or press the horn.
+      Do not use for hazard lights or any other sound.
+    vss: Vehicle.Body.Horn.IsActive
+    params:
+      is_active: {type: bool, required: true}
+    precondition: []
+    initial: false
+    ko: ["경적 울려줘", "클랙슨 한 번 눌러", "빵 해줘", "경적 그만", "앞차 안 가네 경적"]
 
   - id: get_vehicle_state
     domain: status

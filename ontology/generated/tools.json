@@ -100,13 +100,14 @@
   {
     "name": "set_window_position",
     "domain": "settings",
-    "description": "Open or close a window to a position (0 closed, 100 fully open). Not allowed while the vehicle is moving above 60 km/h.",
+    "description": "Open or close windows to a position (0 closed, 100 fully open). Use for any request to open, close, lower, or raise a window. Do not use for doors or the sunroof.",
     "parameters": {
       "type": "object",
       "properties": {
         "window": {
           "type": "string",
           "enum": [
+            "all",
             "driver",
             "passenger",
             "rear_left",
@@ -132,6 +133,122 @@
       "speed_below_60"
     ],
     "vss": "Vehicle.Cabin.Door.{window}.Window.Position",
+    "ext": false
+  },
+  {
+    "name": "set_door_lock",
+    "domain": "settings",
+    "description": "Lock or unlock doors. Use when the user asks to lock, unlock, open, or close a car door. Do not use for windows or the trunk.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "door": {
+          "type": "string",
+          "enum": [
+            "all",
+            "driver",
+            "passenger",
+            "rear"
+          ],
+          "default": "all",
+          "description": "default: all"
+        },
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "locked"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [],
+    "vss": "Vehicle.Cabin.Door.{door}.IsLocked",
+    "ext": false
+  },
+  {
+    "name": "set_seat_climate",
+    "domain": "settings",
+    "description": "Turn seat heating or ventilation on or off for one seat, with a level from 1 to 3. Use for seat warmer or cooling seat requests. Do not use for cabin air temperature.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "seat": {
+          "type": "string",
+          "enum": [
+            "driver",
+            "passenger",
+            "rear_left",
+            "rear_right"
+          ],
+          "default": "driver",
+          "description": "default: driver"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "HEAT",
+            "COOL",
+            "OFF"
+          ]
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3,
+          "default": 2,
+          "description": "default: 2"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.Seat.{seat}.HeatingCooling",
+    "ext": false
+  },
+  {
+    "name": "set_hazard_lights",
+    "domain": "settings",
+    "description": "Turn the hazard warning lights on or off. Use when the user mentions hazard lights or an emergency stop signal. Do not use for headlights or turn signals.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "is_on": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "is_on"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [],
+    "vss": "Vehicle.Body.Lights.Hazard.IsSignaling",
+    "ext": false
+  },
+  {
+    "name": "set_horn",
+    "domain": "settings",
+    "description": "Sound or stop the horn. Use when the user asks to honk or press the horn. Do not use for hazard lights or any other sound.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "is_active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "is_active"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [],
+    "vss": "Vehicle.Body.Horn.IsActive",
     "ext": false
   },
   {

@@ -107,3 +107,41 @@ functions:
       query: {type: string, required: true}
     precondition: []
     ko: ["이 경고등 뭐야", "타이어 공기압 경고 뜨면 어떻게 해", "크루즈 컨트롤 어떻게 켜"]
+
+  - id: set_nav_mute
+    domain: nav
+    description: >-
+      Mute or unmute the navigation voice guidance. Use when the user wants to
+      silence or restore turn-by-turn spoken directions. Do not use for media or overall volume.
+    vss: Vehicle.Cabin.Infotainment.Navigation.Mute
+    params:
+      state: {type: enum, values: [MUTED, ALERT_ONLY, UNMUTED], required: true}
+    precondition: [power_on]
+    initial: UNMUTED
+    ko: ["내비 안내 꺼줘", "길 안내 음성 좀 꺼", "다시 안내 켜줘", "경고음만 나오게 해"]
+
+  - id: set_nav_volume
+    domain: nav
+    description: >-
+      Set the navigation voice guidance volume (0-100 percent). Use for how loud the
+      route guidance speaks. Do not use for media volume or muting.
+    vss: Vehicle.Cabin.Infotainment.Navigation.Volume
+    params:
+      value: {type: int, min: 0, max: 100, unit: percent, required: true}
+    precondition: [power_on]
+    initial: 50
+    ko: ["내비 소리 키워", "안내 음성 좀 줄여", "길안내 볼륨 최대로"]
+
+  - id: get_nav_location
+    domain: nav
+    description: >-
+      Read the vehicle's current location coordinate (latitude or longitude).
+      Use for questions about where the car is now. Not for setting a destination.
+    vss:
+      latitude: Vehicle.CurrentLocation.Latitude
+      longitude: Vehicle.CurrentLocation.Longitude
+    params:
+      field: {type: enum, values: [latitude, longitude], required: true}
+    precondition: []
+    initial: {latitude: 37.5665, longitude: 126.9780}
+    ko: ["지금 내 위치 어디야", "현재 위도 알려줘", "차 지금 어디쯤이야"]

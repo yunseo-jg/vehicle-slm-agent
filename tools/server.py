@@ -2,7 +2,7 @@
 
     python tools/server.py
 
-지금은 동작 확인용으로 도구 2개만 손으로 등록했다.
+지금은 동작 확인용 도구를 손으로 등록했다.
 4주차에 ontology/generated/tools.json 을 읽어 도메인별 구현(tools/<domain>.py)과
 묶는 방식으로 바꾼다.
 반환 형식은 sim.state.ok / err 만 쓴다.
@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mcp.server.mcpserver import MCPServer  # noqa: E402
 
 from sim.state import PreconditionError, VehicleState, err, ok  # noqa: E402
+from tools import media as media_tools  # noqa: E402
 
 mcp = MCPServer("vehicle")
 state = VehicleState()
@@ -57,6 +58,34 @@ def get_vehicle_state(field: str) -> dict:
         return err("out_of_range", f"field must be one of {list(fields)}")
     key = fields[field]
     return ok(state, {key: state.get(key)})
+
+
+@mcp.tool(description=media_tools.SCHEMAS["set_media_action"]["description"])
+def set_media_action(action: str) -> dict:
+    """Control media playback: play, stop, skip forward, skip backward.
+    Do not use for volume."""
+    return media_tools.set_media_action(state, action)
+
+
+@mcp.tool(description=media_tools.SCHEMAS["set_media_volume"]["description"])
+def set_media_volume(value: int) -> dict:
+    """Set the media playback volume from 0 to 100 percent.
+    Do not use for playback control or vehicle alert volume."""
+    return media_tools.set_media_volume(state, value)
+
+
+@mcp.tool(description=media_tools.SCHEMAS["set_media_source"]["description"])
+def set_media_source(source: str) -> dict:
+    """Select the media source for playback. Use only for AM, FM, USB, Bluetooth,
+    or internet media, not for playback actions."""
+    return media_tools.set_media_source(state, source)
+
+
+@mcp.tool(description=media_tools.SCHEMAS["get_media_info"]["description"])
+def get_media_info(field: str) -> dict:
+    """Read the album, artist, or track of the media currently playing.
+    Use for media information, not for changing playback."""
+    return media_tools.get_media_info(state, field)
 
 
 if __name__ == "__main__":

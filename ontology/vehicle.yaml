@@ -22,11 +22,6 @@ instance_map:
     passenger: Row1.PassengerSide
     rear_left: Row2.DriverSide
     rear_right: Row2.PassengerSide
-  seat:
-    driver: Row1.DriverSide
-    passenger: Row1.PassengerSide
-    rear_left: Row2.DriverSide
-    rear_right: Row2.PassengerSide
 
 # precondition 종류 (sim/state.py 에서 검사)
 #   power_on        LowVoltageSystemState in [ON, START]
@@ -106,20 +101,6 @@ functions:
     precondition: []
     initial: false
     ko: ["문 잠가줘", "차 문 전부 열어줘", "뒷자리 문 열어", "조수석 문 잠궈줄래", "다 탔으니까 잠가", "잠금 풀어줘"]
-
-  - id: set_seat_climate
-    domain: settings
-    description: >-
-      Turn seat heating or ventilation on or off for one seat, with a level from 1 to 3.
-      Use for seat warmer or cooling seat requests. Do not use for cabin air temperature.
-    vss: Vehicle.Cabin.Seat.{seat}.HeatingCooling
-    params:
-      seat: {type: enum, values: [driver, passenger, rear_left, rear_right], default: driver}
-      mode: {type: enum, values: [HEAT, COOL, "OFF"], required: true}  # OFF 는 YAML 불리언이라 따옴표 필수
-      level: {type: int, min: 1, max: 3, default: 2}
-    precondition: [power_on]
-    initial: 0
-    ko: ["시트 열선 켜줘", "조수석 통풍 시트 틀어", "엉덩이 좀 따뜻하게 해줘", "시트 바람 세게", "열선 꺼", "의자 시원하게 해줄래"]
 
   - id: set_hazard_lights
     domain: settings

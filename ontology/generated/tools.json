@@ -167,51 +167,6 @@
     "ext": false
   },
   {
-    "name": "set_seat_climate",
-    "domain": "settings",
-    "description": "Turn seat heating or ventilation on or off for one seat, with a level from 1 to 3. Use for seat warmer or cooling seat requests. Do not use for cabin air temperature.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "seat": {
-          "type": "string",
-          "enum": [
-            "driver",
-            "passenger",
-            "rear_left",
-            "rear_right"
-          ],
-          "default": "driver",
-          "description": "default: driver"
-        },
-        "mode": {
-          "type": "string",
-          "enum": [
-            "HEAT",
-            "COOL",
-            "OFF"
-          ]
-        },
-        "level": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 3,
-          "default": 2,
-          "description": "default: 2"
-        }
-      },
-      "required": [
-        "mode"
-      ],
-      "additionalProperties": false
-    },
-    "precondition": [
-      "power_on"
-    ],
-    "vss": "Vehicle.Cabin.Seat.{seat}.HeatingCooling",
-    "ext": false
-  },
-  {
     "name": "set_hazard_lights",
     "domain": "settings",
     "description": "Turn the hazard warning lights on or off. Use when the user mentions hazard lights or an emergency stop signal. Do not use for headlights or turn signals.",

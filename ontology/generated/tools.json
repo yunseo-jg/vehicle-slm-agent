@@ -70,6 +70,86 @@
     "ext": false
   },
   {
+    "name": "set_hvac_ac_power",
+    "domain": "hvac",
+    "description": "Turn the air conditioner on or off. Use when the user asks to turn the A/C on or off. Do not use for temperature or fan speed.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.HVAC.IsAirConditioningActive",
+    "ext": false
+  },
+  {
+    "name": "set_hvac_defroster",
+    "domain": "hvac",
+    "description": "Turn the front windshield defroster on or off. Use when the windshield is fogged or frosted. Do not use for temperature or the air conditioner.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.HVAC.IsFrontDefrosterActive",
+    "ext": false
+  },
+  {
+    "name": "set_hvac_seat_heating",
+    "domain": "hvac",
+    "description": "Set seat heater level (0 off, 100 maximum) for one seat. Use when the user feels cold or asks for a warm seat. Do not use for cabin temperature.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "seat": {
+          "type": "string",
+          "enum": [
+            "driver",
+            "passenger",
+            "rear_left",
+            "rear_right"
+          ],
+          "default": "driver",
+          "description": "default: driver"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "unit: percent"
+        }
+      },
+      "required": [
+        "level"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.Seat.{seat}.HeatingCooling",
+    "ext": false
+  },
+  {
     "name": "set_media_action",
     "domain": "media",
     "description": "Control media playback: play, stop, skip forward, skip backward. Do not use for volume.",

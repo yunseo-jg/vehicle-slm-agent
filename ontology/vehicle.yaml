@@ -11,6 +11,11 @@ instance_map:
     driver: Row1.Driver
     passenger: Row1.Passenger
     rear: Row2.Driver
+  seat:
+    driver: Row1.DriverSide
+    passenger: Row1.PassengerSide
+    rear_left: Row2.DriverSide
+    rear_right: Row2.PassengerSide
   window:
     driver: Row1.DriverSide
     passenger: Row1.PassengerSide
@@ -55,6 +60,43 @@ functions:
     precondition: [power_on]
     initial: 40
     ko: ["바람 세게", "풍량 약하게", "바람 좀 줄여"]
+
+  - id: set_hvac_ac_power
+    domain: hvac
+    description: >-
+      Turn the air conditioner on or off. Use when the user asks to turn the A/C on or off.
+      Do not use for temperature or fan speed.
+    vss: Vehicle.Cabin.HVAC.IsAirConditioningActive
+    params:
+      enabled: {type: bool, required: true}
+    precondition: [power_on]
+    initial: false
+    ko: ["에어컨 켜줘", "에어컨 꺼", "에어컨 좀 틀어봐", "에어컨 끄자"]
+
+  - id: set_hvac_defroster
+    domain: hvac
+    description: >-
+      Turn the front windshield defroster on or off. Use when the windshield is fogged or frosted.
+      Do not use for temperature or the air conditioner.
+    vss: Vehicle.Cabin.HVAC.IsFrontDefrosterActive
+    params:
+      enabled: {type: bool, required: true}
+    precondition: [power_on]
+    initial: false
+    ko: ["앞유리 김 서렸어", "성에 제거해줘", "김서림 없애줘", "앞유리 성에 좀 꺼줘"]
+
+  - id: set_hvac_seat_heating
+    domain: hvac
+    description: >-
+      Set seat heater level (0 off, 100 maximum) for one seat. Use when the user feels cold
+      or asks for a warm seat. Do not use for cabin temperature.
+    vss: Vehicle.Cabin.Seat.{seat}.HeatingCooling
+    params:
+      seat: {type: enum, values: [driver, passenger, rear_left, rear_right], default: driver}
+      level: {type: int, min: 0, max: 100, unit: percent, required: true}
+    precondition: [power_on]
+    initial: 0
+    ko: ["시트 열선 켜줘", "엉덩이 따뜻하게 해줘", "열선 최대로", "시트 열선 꺼줘"]
 
   - id: set_media_action
     domain: media

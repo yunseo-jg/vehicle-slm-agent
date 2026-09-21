@@ -116,7 +116,7 @@
   {
     "name": "set_hvac_seat_heating",
     "domain": "hvac",
-    "description": "Set seat heater level (0 off, 100 maximum) for one seat. Use when the user feels cold or asks for a warm seat. Do not use for cabin temperature.",
+    "description": "Set seat heater level (0 off, 100 maximum) for one seat. Use when the user asks for a heated or warm seat. Do not use for cabin temperature.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -131,7 +131,7 @@
           "default": "driver",
           "description": "default: driver"
         },
-        "level": {
+        "value": {
           "type": "integer",
           "minimum": 0,
           "maximum": 100,
@@ -139,7 +139,7 @@
         }
       },
       "required": [
-        "level"
+        "value"
       ],
       "additionalProperties": false
     },

@@ -71,7 +71,7 @@ functions:
       enabled: {type: bool, required: true}
     precondition: [power_on]
     initial: false
-    ko: ["에어컨 켜줘", "에어컨 꺼", "에어컨 좀 틀어봐", "에어컨 끄자"]
+    ko: ["에어컨 켜줘", "에어컨 꺼", "에어컨 틀어줘", "에어컨 끄자"]
 
   - id: set_hvac_defroster
     domain: hvac
@@ -83,20 +83,20 @@ functions:
       enabled: {type: bool, required: true}
     precondition: [power_on]
     initial: false
-    ko: ["앞유리 김 서렸어", "성에 제거해줘", "김서림 없애줘", "앞유리 성에 좀 꺼줘"]
+    ko: ["성에 제거 꺼줘", "성에 제거해줘", "김서림 없애줘", "성에 없애줘"]
 
   - id: set_hvac_seat_heating
     domain: hvac
     description: >-
-      Set seat heater level (0 off, 100 maximum) for one seat. Use when the user feels cold
-      or asks for a warm seat. Do not use for cabin temperature.
+      Set seat heater level (0 off, 100 maximum) for one seat. Use when the user asks for a heated or warm seat.
+      Do not use for cabin temperature.
     vss: Vehicle.Cabin.Seat.{seat}.HeatingCooling
     params:
       seat: {type: enum, values: [driver, passenger, rear_left, rear_right], default: driver}
-      level: {type: int, min: 0, max: 100, unit: percent, required: true}
+      value: {type: int, min: 0, max: 100, unit: percent, required: true}
     precondition: [power_on]
     initial: 0
-    ko: ["시트 열선 켜줘", "엉덩이 따뜻하게 해줘", "열선 최대로", "시트 열선 꺼줘"]
+    ko: ["시트 열선 켜줘", "시트 따뜻하게 해줘", "시트 열선 꺼줘", "시트 최대로 따뜻하게 해줘"]
 
   - id: set_media_action
     domain: media

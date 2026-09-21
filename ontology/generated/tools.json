@@ -182,5 +182,84 @@
     "precondition": [],
     "vss": null,
     "ext": true
+  },
+  {
+    "name": "set_nav_mute",
+    "domain": "nav",
+    "description": "Mute or unmute the navigation voice guidance. Use when the user wants to silence or restore turn-by-turn spoken directions. Do not use for media or overall volume.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "MUTED",
+            "ALERT_ONLY",
+            "UNMUTED"
+          ]
+        }
+      },
+      "required": [
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.Infotainment.Navigation.Mute",
+    "ext": false
+  },
+  {
+    "name": "set_nav_volume",
+    "domain": "nav",
+    "description": "Set the navigation voice guidance volume (0-100 percent). Use for how loud the route guidance speaks. Do not use for media volume or muting.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "unit: percent"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": "Vehicle.Cabin.Infotainment.Navigation.Volume",
+    "ext": false
+  },
+  {
+    "name": "get_nav_location",
+    "domain": "nav",
+    "description": "Read the vehicle's current location coordinate (latitude or longitude). Use for questions about where the car is now. Not for setting a destination.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string",
+          "enum": [
+            "latitude",
+            "longitude"
+          ]
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [],
+    "vss": {
+      "latitude": "Vehicle.CurrentLocation.Latitude",
+      "longitude": "Vehicle.CurrentLocation.Longitude"
+    },
+    "ext": false
   }
 ]

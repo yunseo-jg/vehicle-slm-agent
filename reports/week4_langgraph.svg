@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560" role="img" aria-labelledby="title desc">
+  <title id="title">차량 에이전트 5노드 LangGraph</title>
+  <desc id="desc">START에서 intent, tool_select, validate, execute, respond를 거쳐 END로 이동하며 도구 불필요, 되묻기, 거절 요청은 respond로 분기한다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="560" fill="#f8fafc"/>
+  <text x="700" y="54" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="30" font-weight="700" fill="#0f172a">차량 에이전트 5노드 LangGraph</text>
+  <text x="700" y="84" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="16" fill="#64748b">사용자 발화 → 도구 선택 → 코드 검증 → MCP 실행 → 한국어 응답</text>
+
+  <!-- main flow arrows -->
+  <g fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)">
+    <path d="M 120 250 L 195 250"/>
+    <path d="M 385 250 L 455 250"/>
+    <path d="M 665 250 L 735 250"/>
+    <path d="M 945 250 L 1015 250"/>
+  </g>
+
+  <!-- branch arrows -->
+  <g fill="none" stroke="#7c3aed" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#arrow)">
+    <path d="M 290 305 C 290 425, 760 438, 1005 420"/>
+    <path d="M 840 305 C 840 360, 935 400, 1005 410"/>
+  </g>
+
+  <!-- edge labels -->
+  <g font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="14" font-weight="600">
+    <text x="420" y="232" text-anchor="middle" fill="#334155">도구 필요</text>
+    <text x="580" y="414" text-anchor="middle" fill="#6d28d9">도구 불필요</text>
+    <text x="980" y="232" text-anchor="middle" fill="#334155">검증 통과</text>
+    <text x="963" y="360" text-anchor="middle" fill="#6d28d9">되묻기 · 거절</text>
+  </g>
+
+  <!-- start -->
+  <circle cx="80" cy="250" r="40" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+  <text x="80" y="255" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#334155">START</text>
+
+  <!-- intent -->
+  <g filter="url(#shadow)">
+    <rect x="195" y="195" width="190" height="110" rx="18" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  </g>
+  <text x="290" y="238" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">intent</text>
+  <text x="290" y="270" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="15" fill="#1e40af">도구 필요 여부 판단</text>
+
+  <!-- tool select -->
+  <g filter="url(#shadow)">
+    <rect x="455" y="195" width="210" height="110" rx="18" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+  </g>
+  <text x="560" y="238" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#312e81">tool_select</text>
+  <text x="560" y="270" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="15" fill="#3730a3">모델의 도구·인자 선택</text>
+
+  <!-- validate -->
+  <g filter="url(#shadow)">
+    <rect x="735" y="195" width="210" height="110" rx="18" fill="#fef3c7" stroke="#d97706" stroke-width="3"/>
+  </g>
+  <text x="840" y="238" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#78350f">validate</text>
+  <text x="840" y="268" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="15" fill="#92400e">인자 · 범위 · 안전 검사</text>
+  <text x="840" y="289" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="13" font-weight="600" fill="#b45309">모델이 아닌 코드로 판단</text>
+
+  <!-- execute -->
+  <g filter="url(#shadow)">
+    <rect x="1015" y="195" width="190" height="110" rx="18" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  </g>
+  <text x="1110" y="238" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#14532d">execute</text>
+  <text x="1110" y="270" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="15" fill="#166534">MCP 도구 실행</text>
+
+  <!-- respond -->
+  <g filter="url(#shadow)">
+    <rect x="1015" y="365" width="190" height="105" rx="18" fill="#f3e8ff" stroke="#9333ea" stroke-width="2"/>
+  </g>
+  <text x="1110" y="408" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#581c87">respond</text>
+  <text x="1110" y="440" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="15" fill="#6b21a8">한국어 응답 생성</text>
+
+  <!-- execute to respond -->
+  <path d="M 1110 305 L 1110 355" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- end -->
+  <circle cx="1320" cy="418" r="40" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+  <text x="1320" y="423" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#334155">END</text>
+  <path d="M 1205 418 L 1270 418" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- caption -->
+  <rect x="195" y="500" width="1010" height="38" rx="12" fill="#eef2ff"/>
+  <text x="700" y="524" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', sans-serif" font-size="14" fill="#4338ca">한 턴에 도구 하나 원칙 · 차량 상태는 매 턴 새로 주입 · 실행 결과는 {status, code, state_after} 유지</text>
+</svg>

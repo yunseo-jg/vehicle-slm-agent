@@ -21,9 +21,11 @@ from mcp.server.mcpserver import MCPServer  # noqa: E402
 
 from sim.state import PreconditionError, VehicleState, err, ok  # noqa: E402
 from tools import media as media_tools  # noqa: E402
+from tools import nav as nav_tools  # noqa: E402
 
 mcp = MCPServer("vehicle")
 state = VehicleState()
+vehicle = state  # nav 도구용 별칭 (set_nav_mute 의 인자 이름 state 와 겹치지 않게)
 
 ZONE = {"driver": "Row1.Driver", "passenger": "Row1.Passenger", "rear": "Row2.Driver"}
 
@@ -86,6 +88,37 @@ def get_media_info(field: str) -> dict:
     """Read the album, artist, or track of the media currently playing.
     Use for media information, not for changing playback."""
     return media_tools.get_media_info(state, field)
+
+
+# 스키마의 파라미터 이름이 "state" 라서 서버 함수 인자도 state 로 받고,
+# 시뮬레이터 객체는 모듈 전역 vehicle 이름으로 넘긴다.
+@mcp.tool(description=nav_tools.SCHEMAS["set_nav_mute"]["description"])
+def set_nav_mute(state: str) -> dict:
+    """Mute or unmute the navigation voice guidance. Use when the user wants to
+    silence or restore turn-by-turn spoken directions. Do not use for media or overall volume."""
+    return nav_tools.set_nav_mute(vehicle, state)
+
+
+@mcp.tool(description=nav_tools.SCHEMAS["set_nav_volume"]["description"])
+def set_nav_volume(value: int) -> dict:
+    """Set the navigation voice guidance volume (0-100 percent). Use for how loud the
+    route guidance speaks. Do not use for media volume or muting."""
+    return nav_tools.set_nav_volume(vehicle, value)
+
+
+@mcp.tool(description=nav_tools.SCHEMAS["get_nav_location"]["description"])
+def get_nav_location(field: str) -> dict:
+    """Read the vehicle's current location coordinate (latitude or longitude).
+    Use for questions about where the car is now. Not for setting a destination."""
+    return nav_tools.get_nav_location(vehicle, field)
+
+
+@mcp.tool(description=nav_tools.SCHEMAS["set_nav_destination"]["description"])
+def set_nav_destination(place_name: str) -> dict:
+    """Set the navigation destination by place name. Pass the Korean place name exactly as the
+    user said it, without particles such as 으로 or 까지.
+    Do not use for guidance volume or muting."""
+    return nav_tools.set_nav_destination(vehicle, place_name)
 
 
 if __name__ == "__main__":

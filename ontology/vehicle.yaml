@@ -271,3 +271,18 @@ functions:
     precondition: []
     initial: {latitude: 37.5665, longitude: 126.9780}
     ko: ["지금 내 위치 어디야", "현재 위도 알려줘", "차 지금 어디쯤이야"]
+
+  # 장소명 → 좌표 변환은 tools/nav.py 의 PLACES 사전으로 처리 (실제 지오코딩 API 미사용, 오프라인 전제)
+  - id: set_nav_destination
+    domain: nav
+    description: >-
+      Set the navigation destination by place name. Pass the Korean place name exactly as the
+      user said it, without particles such as 으로 or 까지. Do not use for guidance volume or muting.
+    vss:
+      latitude: Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Latitude
+      longitude: Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Longitude
+    params:
+      place_name: {type: string, required: true}
+    precondition: [power_on]
+    initial: {latitude: null, longitude: null}
+    ko: ["집으로 가자", "회사로 안내해줘", "목적지 서울역으로 바꿔", "강남역 가는 길 알려줘"]

@@ -498,5 +498,30 @@
       "longitude": "Vehicle.CurrentLocation.Longitude"
     },
     "ext": false
+  },
+  {
+    "name": "set_nav_destination",
+    "domain": "nav",
+    "description": "Set the navigation destination by place name. Pass the Korean place name exactly as the user said it, without particles such as 으로 or 까지. Do not use for guidance volume or muting.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "place_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "place_name"
+      ],
+      "additionalProperties": false
+    },
+    "precondition": [
+      "power_on"
+    ],
+    "vss": {
+      "latitude": "Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Latitude",
+      "longitude": "Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Longitude"
+    },
+    "ext": false
   }
 ]

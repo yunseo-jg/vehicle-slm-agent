@@ -85,3 +85,12 @@ def get_media_info(state: VehicleState, field: str) -> dict:
         return error
     key = INFO_FIELDS[field]
     return ok(state, {key: state.get(key)})
+
+
+# 도구 이름 → 구현. tools/server.py 가 tools.json 의 도구를 여기서 찾아 등록한다
+HANDLERS = {
+    "set_media_action": set_media_action,
+    "set_media_volume": set_media_volume,
+    "set_media_source": set_media_source,
+    "get_media_info": get_media_info,
+}

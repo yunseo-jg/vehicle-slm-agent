@@ -278,8 +278,8 @@
             "rear_left",
             "rear_right"
           ],
-          "default": "driver",
-          "description": "default: driver"
+          "default": "all",
+          "description": "default: all"
         },
         "position": {
           "type": "integer",
@@ -399,26 +399,6 @@
       "speed": "Vehicle.Speed"
     },
     "ext": false
-  },
-  {
-    "name": "search_manual",
-    "domain": "phone_manual",
-    "description": "Search the owner's manual for explanations of warning lights, features, or maintenance. Use when the user asks what something means or how a feature works.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "query"
-      ],
-      "additionalProperties": false
-    },
-    "precondition": [],
-    "vss": null,
-    "ext": true
   },
   {
     "name": "set_nav_mute",

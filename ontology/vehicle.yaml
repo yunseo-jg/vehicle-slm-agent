@@ -164,7 +164,7 @@ functions:
       to open, close, lower, or raise a window. Do not use for doors or the sunroof.
     vss: Vehicle.Cabin.Door.{window}.Window.Position
     params:
-      window: {type: enum, values: [all, driver, passenger, rear_left, rear_right], default: driver}
+      window: {type: enum, values: [all, driver, passenger, rear_left, rear_right], default: all}
       position: {type: int, min: 0, max: 100, unit: percent, required: true}
     precondition: [power_on, speed_below_60]
     initial: 0
@@ -221,18 +221,6 @@ functions:
     precondition: []
     initial: {battery: 68, range: 245000, speed: 0}
     ko: ["배터리 얼마나 남았어", "얼마나 더 갈 수 있어", "지금 몇 킬로로 가고 있어"]
-
-  - id: search_manual
-    domain: phone_manual
-    ext: true
-    vss: null
-    description: >-
-      Search the owner's manual for explanations of warning lights, features, or maintenance.
-      Use when the user asks what something means or how a feature works.
-    params:
-      query: {type: string, required: true}
-    precondition: []
-    ko: ["이 경고등 뭐야", "타이어 공기압 경고 뜨면 어떻게 해", "크루즈 컨트롤 어떻게 켜"]
 
   - id: set_nav_mute
     domain: nav

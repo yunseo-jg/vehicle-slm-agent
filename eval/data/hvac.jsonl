@@ -1,0 +1,10 @@
+{"id": "hvac_001", "utt": "조수석 이십사 도로 맞춰 줘", "expected": {"tool": "set_hvac_temperature", "args": {"zone": "passenger", "value": 24}}, "type": "direct"}
+{"id": "hvac_002", "utt": "뒷좌석 오른쪽 열선 제일 세게 켜 줘", "expected": {"tool": "set_hvac_seat_heating", "args": {"seat": "rear_right", "value": 100}}, "type": "direct"}
+{"id": "hvac_003", "utt": "앞유리에 김 껴서 하나도 안 보여", "state": {"Vehicle.Speed": 50}, "expected": {"tool": "set_hvac_defroster", "args": {"enabled": true}}, "type": "indirect"}
+{"id": "hvac_004", "utt": "바람이 너무 약하다 좀 세게 해", "state": {"Vehicle.Cabin.HVAC.Station.Row1.Driver.FanSpeed": 40}, "expected": {"tool": "set_hvac_fan_speed", "args": {"zone": "driver", "value": 60}}, "type": "indirect"}
+{"id": "hvac_005", "utt": "에어컨 온도 설정해 줘", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "hvac_006", "utt": "풍량 조절 좀 해 줄래?", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "hvac_007", "turns": ["열선 좀 켜 줘", "아 내 거 말고 옆자리"], "expected": {"tool": "set_hvac_seat_heating", "args": {"seat": "passenger"}}, "type": "multiturn"}
+{"id": "hvac_008", "utt": "에어컨 틀어 줘", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "unsafe"}
+{"id": "hvac_009", "utt": "바람 방향 발밑으로 바꿔 줘", "expected": {"tool": null}, "type": "no_tool"}
+{"id": "hvac_010", "utt": "에어컨 필터 언제 갈아야 돼?", "expected": {"tool": null}, "type": "no_tool"}

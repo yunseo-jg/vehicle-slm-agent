@@ -23,6 +23,8 @@
   "Vehicle.Cabin.Infotainment.Media.Played.Source": "BLUETOOTH",
   "Vehicle.Cabin.Infotainment.Media.Played.Track": "Demo Track",
   "Vehicle.Cabin.Infotainment.Media.Volume": 40,
+  "Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Latitude": null,
+  "Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Longitude": null,
   "Vehicle.Cabin.Infotainment.Navigation.Mute": "UNMUTED",
   "Vehicle.Cabin.Infotainment.Navigation.Volume": 50,
   "Vehicle.Cabin.Seat.Row1.DriverSide.HeatingCooling": 0,

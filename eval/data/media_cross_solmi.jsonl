@@ -1,0 +1,5 @@
+{"id": "media_101", "utt": "앞 곡으로 돌려 줘", "expected": {"tool": "set_media_action", "args": {"action": "SKIP_BACKWARD"}}, "type": "direct"}
+{"id": "media_102", "utt": "AM 라디오로 바꿔 줘", "expected": {"tool": "set_media_source", "args": {"source": "AM"}}, "type": "direct"}
+{"id": "media_103", "utt": "차 안이 너무 조용하네 뭐라도 틀어 봐", "expected": {"tool": "set_media_action", "args": {"action": "PLAY"}}, "type": "indirect"}
+{"id": "media_104", "turns": ["지금 나오는 노래 누가 불렀어?", "앨범은 뭐야?"], "expected": {"tool": "get_media_info", "args": {"field": "album"}}, "type": "multiturn"}
+{"id": "media_105", "utt": "이 노래 진짜 좋다", "expected": {"tool": null}, "type": "no_tool"}

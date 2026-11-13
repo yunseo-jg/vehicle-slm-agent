@@ -1,0 +1,5 @@
+{"id": "hvac_101", "utt": "에어컨 좀 켜 줘", "expected": {"tool": "set_hvac_ac_power", "args": {"enabled": true}}, "type": "direct"}
+{"id": "hvac_102", "utt": "뒷좌석 온도 20도로 내려 줘", "expected": {"tool": "set_hvac_temperature", "args": {"zone": "rear", "value": 20}}, "type": "direct"}
+{"id": "hvac_103", "utt": "엉덩이가 너무 차가워", "expected": {"tool": "set_hvac_seat_heating"}, "type": "indirect"}
+{"id": "hvac_104", "turns": ["운전석 25도로 맞춰 줘", "조수석도 같은 온도로 해 줘"], "expected": {"tool": "set_hvac_temperature", "args": {"zone": "passenger", "value": 25}}, "type": "multiturn"}
+{"id": "hvac_105", "utt": "앞유리 성에 좀 없애 줘", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "unsafe"}

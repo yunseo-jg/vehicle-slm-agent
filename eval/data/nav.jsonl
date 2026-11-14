@@ -1,0 +1,20 @@
+{"id": "nav_001", "utt": "길안내 목소리 꺼", "expected": {"tool": "set_nav_mute", "args": {"state": "MUTED"}}, "type": "direct"}
+{"id": "nav_002", "utt": "안내 음성 다시 나오게 해줘", "expected": {"tool": "set_nav_mute", "args": {"state": "UNMUTED"}}, "type": "direct"}
+{"id": "nav_003", "utt": "안내는 빼고 경고음만 들리게 해줘", "expected": {"tool": "set_nav_mute", "args": {"state": "ALERT_ONLY"}}, "type": "direct"}
+{"id": "nav_004", "utt": "내비 볼륨 끝까지 올려", "expected": {"tool": "set_nav_volume", "args": {"value": 100}}, "type": "direct"}
+{"id": "nav_005", "utt": "길안내 소리 반으로 줄여줘", "expected": {"tool": "set_nav_volume", "args": {"value": 50}}, "type": "direct"}
+{"id": "nav_006", "utt": "지금 차 위치 위도 좀 알려줘", "expected": {"tool": "get_nav_location", "args": {"field": "latitude"}}, "type": "direct"}
+{"id": "nav_007", "utt": "길 안내 소리가 너무 작아서 하나도 안 들려", "expected": {"tool": "set_nav_volume"}, "type": "indirect"}
+{"id": "nav_008", "utt": "안내 소리가 너무 커서 귀 아파", "expected": {"tool": "set_nav_volume"}, "type": "indirect"}
+{"id": "nav_009", "utt": "나 지금 어디쯤 왔는지 모르겠네", "expected": {"tool": "get_nav_location"}, "type": "indirect"}
+{"id": "nav_010", "utt": "노래 좀 듣게 길 안내는 조용히 해줘", "expected": {"tool": "set_nav_mute", "args": {"state": "MUTED"}}, "type": "indirect"}
+{"id": "nav_011", "utt": "내비 볼륨 좀 맞춰줘", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "nav_012", "utt": "안내 음성 모드 바꿔", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "nav_013", "utt": "길안내 소리 크기 바꿔줄래", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "nav_014", "turns": ["길안내 소리 좀 줄여줘", "아니 그냥 아예 꺼"], "expected": {"tool": "set_nav_mute", "args": {"state": "MUTED"}}, "type": "multiturn"}
+{"id": "nav_015", "turns": ["안내 음성 꺼줘", "아 역시 다시 켜"], "expected": {"tool": "set_nav_mute", "args": {"state": "UNMUTED"}}, "type": "multiturn"}
+{"id": "nav_016", "turns": ["내비 볼륨 최대로 해줘", "너무 크다 반으로 해"], "expected": {"tool": "set_nav_volume", "args": {"value": 50}}, "type": "multiturn"}
+{"id": "nav_017", "turns": ["지금 위도 알려줘", "경도는?"], "expected": {"tool": "get_nav_location", "args": {"field": "longitude"}}, "type": "multiturn"}
+{"id": "nav_018", "utt": "내비 화면 좀 밝게 해줘", "expected": {"tool": null}, "type": "no_tool"}
+{"id": "nav_019", "utt": "오늘 길 왜 이렇게 막히냐", "expected": {"tool": null}, "type": "no_tool"}
+{"id": "nav_020", "utt": "다음 휴게소까지 얼마나 남았어", "expected": {"tool": null}, "type": "no_tool"}

@@ -29,6 +29,7 @@ from pydantic import Field  # noqa: E402
 from sim.state import VehicleState  # noqa: E402
 from tools import hvac as hvac_tools  # noqa: E402
 from tools import media as media_tools  # noqa: E402
+from tools import nav as nav_tools  # noqa: E402
 from tools import settings as settings_tools  # noqa: E402
 from tools import status as status_tools  # noqa: E402
 
@@ -44,6 +45,7 @@ state = VehicleState()
 HANDLERS: dict[str, Callable[..., dict]] = {
     **hvac_tools.HANDLERS,
     **media_tools.HANDLERS,
+    **nav_tools.HANDLERS,
     **status_tools.HANDLERS,
     **settings_tools.HANDLERS,
 }

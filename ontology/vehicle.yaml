@@ -207,21 +207,6 @@ functions:
     initial: false
     ko: ["경적 울려줘", "클랙슨 한 번 눌러", "빵 해줘", "경적 그만", "앞차 안 가네 경적"]
 
-  - id: get_vehicle_state
-    domain: status
-    description: >-
-      Read a vehicle status value such as battery level, range, or speed.
-      Use for questions, not for changing anything.
-    vss:
-      battery: Vehicle.Powertrain.TractionBattery.StateOfCharge.Displayed
-      range: Vehicle.Powertrain.Range
-      speed: Vehicle.Speed
-    params:
-      field: {type: enum, values: [battery, range, speed], required: true}
-    precondition: []
-    initial: {battery: 68, range: 245000, speed: 0}
-    ko: ["배터리 얼마나 남았어", "얼마나 더 갈 수 있어", "지금 몇 킬로로 가고 있어"]
-
   - id: set_nav_mute
     domain: nav
     description: >-

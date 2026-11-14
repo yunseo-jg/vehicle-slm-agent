@@ -372,35 +372,6 @@
     "ext": false
   },
   {
-    "name": "get_vehicle_state",
-    "domain": "status",
-    "description": "Read a vehicle status value such as battery level, range, or speed. Use for questions, not for changing anything.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "field": {
-          "type": "string",
-          "enum": [
-            "battery",
-            "range",
-            "speed"
-          ]
-        }
-      },
-      "required": [
-        "field"
-      ],
-      "additionalProperties": false
-    },
-    "precondition": [],
-    "vss": {
-      "battery": "Vehicle.Powertrain.TractionBattery.StateOfCharge.Displayed",
-      "range": "Vehicle.Powertrain.Range",
-      "speed": "Vehicle.Speed"
-    },
-    "ext": false
-  },
-  {
     "name": "set_nav_mute",
     "domain": "nav",
     "description": "Mute or unmute the navigation voice guidance. Use when the user wants to silence or restore turn-by-turn spoken directions. Do not use for media or overall volume.",

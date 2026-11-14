@@ -23,7 +23,7 @@ AI 코딩 도구(Cursor, Claude Code, Codex, Copilot 등)가 이 레포에서 �
 | `ontology/build_schema.py` | yaml → `generated/tools.json`, `generated/initial_state.json` | 도구 구현 |
 | `ontology/generated/` | 생성물. 손으로 편집 금지 | |
 | `tools/server.py` | MCP 서버 진입점 | 도메인 로직 |
-| `tools/<domain>.py` | 도메인별 도구 구현 (hvac, media, nav, phone, status) | 상태 저장 |
+| `tools/<domain>.py` | 도메인별 도구 구현 (hvac, media, nav, settings) | 상태 저장 |
 | `sim/state.py` | 차량 상태 dict, get/set, precondition 검사 | 도구 정의 |
 | `agent/graph.py` | LangGraph 노드·엣지 | 프롬프트 문자열 |
 | `agent/prompts.py` | 시스템 프롬프트, few-shot | |
@@ -64,7 +64,7 @@ make validate-eval      # 평가셋과 온톨로지 대조
 
 ## 도구 스키마 작성 원칙 (SLM 기준)
 
-- 이름: `동사_도메인_대상` 소문자 스네이크. `set_hvac_temperature`, `get_vehicle_state`
+- 이름: `동사_도메인_대상` 소문자 스네이크. `set_hvac_temperature`, `get_media_info`
 - description: 언제 쓰는지 한 문장 + 언제 쓰면 안 되는지 한 문장. 3문장 넘기지 않는다
 - 파라미터 3개 이하. enum과 min/max로 값 제한. 중첩 객체 금지
 - 비슷한 도구 여러 개보다 파라미터로 구분되는 하나

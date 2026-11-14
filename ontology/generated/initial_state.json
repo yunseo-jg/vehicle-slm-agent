@@ -35,8 +35,6 @@
   "Vehicle.CurrentLocation.Longitude": 126.978,
   "Vehicle.IsMoving": false,
   "Vehicle.LowVoltageSystemState": "ON",
-  "Vehicle.Powertrain.Range": 245000,
-  "Vehicle.Powertrain.TractionBattery.StateOfCharge.Displayed": 68,
   "Vehicle.Powertrain.Type": "ELECTRIC",
   "Vehicle.Speed": 0
 }

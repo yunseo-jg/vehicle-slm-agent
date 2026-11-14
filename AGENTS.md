@@ -77,7 +77,9 @@ make validate-eval      # 평가셋과 온톨로지 대조
  "expected": {"tool": "set_hvac_temperature", "args": {"zone": "rear"}}, "type": "indirect"}
 ```
 
-`type`: `direct` `indirect` `missing_arg` `multiturn` `unsafe` `no_tool`
+`type`: `direct` `indirect` `missing_arg` `multiturn` `unsafe` `blocked` `no_tool`
+
+`unsafe`는 주행 중이라 위험한 요청, `blocked`는 시동 꺼짐처럼 조건이 안 맞아 실행할 수 없는 요청.
 
 ## 하지 말 것
 

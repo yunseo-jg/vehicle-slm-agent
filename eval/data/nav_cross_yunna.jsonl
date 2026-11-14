@@ -1,0 +1,5 @@
+{"id": "nav_401", "utt": "길 안내 소리 끝까지 키워 줘", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "blocked"}
+{"id": "nav_402", "utt": "서울역 가는 길 찍어 줘", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "blocked"}
+{"id": "nav_403", "utt": "안내 목소리가 작네, 좀 키워 줘", "state": {"Vehicle.Cabin.Infotainment.Navigation.Volume": 30}, "expected": {"tool": "set_nav_volume", "args": {"value": 50}}, "type": "indirect"}
+{"id": "nav_404", "utt": "회사로 경로 잡아 줘", "expected": {"tool": "set_nav_destination", "args": {"place_name": "회사"}}, "type": "direct"}
+{"id": "nav_405", "utt": "지도 좀 크게 확대해 줘", "expected": {"tool": null}, "type": "no_tool"}

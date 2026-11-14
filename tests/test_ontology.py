@@ -39,6 +39,15 @@ def test_required_fields():
             assert f.get("vss"), f"{f['id']} needs vss path or ext: true"
 
 
+def test_ask_prompt_covers_required_params():
+    for f in ONTO["functions"]:
+        required = {name for name, spec in f["params"].items() if spec.get("required")}
+        ask = f.get("ask_prompt", {})
+        assert set(ask) == required, f"{f['id']} ask_prompt must cover exactly {sorted(required)}"
+        for name, sentence in ask.items():
+            assert isinstance(sentence, str) and sentence.strip(), (f["id"], name)
+
+
 def test_params_well_formed():
     for f in ONTO["functions"]:
         for name, spec in f["params"].items():

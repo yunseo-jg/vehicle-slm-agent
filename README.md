@@ -14,7 +14,7 @@ KUBIG 26-2 AI Agent 개발 1팀 / 2026.09 ~ 2026.12
 |---|--------|------|------|
 | 1 | 온톨로지 | `ontology/` | 차량 기능 사전(`vehicle.yaml`). COVESA VSS 6.0 신호 기준. 여기서 도구 스키마와 시뮬레이터 초기 상태를 자동 생성 |
 | 2 | MCP 도구 서버 + 시뮬레이터 | `tools/`, `sim/` | 온톨로지에서 생성된 스키마로 도구를 노출. 실제 차량 대신 상태 dict를 조작 |
-| 3 | LangGraph 에이전트 | `agent/` | 의도 파악 → 도구 선택 → 인자 검증 → 실행 → 응답. 멀티턴, 안전 가드레일 포함 |
+| 3 | LangGraph 에이전트 | `agent/` | 도구 선택 → 인자 검증 → 실행 → 응답. 멀티턴, 안전 가드레일 포함 |
 | 4 | 로컬 SLM 서빙 + LoRA | `training/` | Ollama로 소형 모델 서빙, 도구 호출 형식 학습 |
 | 5 | 평가셋 + 자동 채점 + 트레이싱 | `eval/`, `reports/` | 직접 만든 평가셋으로 모델별·설정별 수치 비교 |
 
@@ -25,7 +25,7 @@ KUBIG 26-2 AI Agent 개발 1팀 / 2026.09 ~ 2026.12
    │
    ▼
 [agent/graph.py]  LangGraph
-   intent → tool_select → validate → execute → respond
+            tool_select → validate → execute → respond
                               │          │
                  온톨로지 제약 검사       │  MCP (stdio)
                  (범위, precondition)    ▼

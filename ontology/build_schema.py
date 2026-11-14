@@ -66,6 +66,7 @@ def build_tools(onto: dict) -> list[dict]:
                 },
                 "precondition": fn.get("precondition", []),
                 "vss": fn.get("vss"),
+                "ask_prompt": fn.get("ask_prompt", {}),
                 "ext": bool(fn.get("ext", False)),
             }
         )

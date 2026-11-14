@@ -32,6 +32,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.HVAC.Station.{zone}.Temperature",
+    "ask_prompt": {
+      "value": "몇 도로 맞출까요?"
+    },
     "ext": false
   },
   {
@@ -67,6 +70,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.HVAC.Station.{zone}.FanSpeed",
+    "ask_prompt": {
+      "value": "바람 세기를 어느 정도로 할까요?"
+    },
     "ext": false
   },
   {
@@ -89,6 +95,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.HVAC.IsAirConditioningActive",
+    "ask_prompt": {
+      "enabled": "에어컨을 켤까요, 끌까요?"
+    },
     "ext": false
   },
   {
@@ -111,6 +120,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.HVAC.IsFrontDefrosterActive",
+    "ask_prompt": {
+      "enabled": "성에 제거를 켤까요, 끌까요?"
+    },
     "ext": false
   },
   {
@@ -147,6 +159,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.Seat.{seat}.HeatingCooling",
+    "ask_prompt": {
+      "value": "시트 열선을 어느 정도로 할까요?"
+    },
     "ext": false
   },
   {
@@ -175,6 +190,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.Infotainment.Media.Action",
+    "ask_prompt": {
+      "action": "재생, 정지, 다음 곡, 이전 곡 중 무엇을 할까요?"
+    },
     "ext": false
   },
   {
@@ -200,6 +218,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.Infotainment.Media.Volume",
+    "ask_prompt": {
+      "value": "음악 볼륨을 얼마로 할까요?"
+    },
     "ext": false
   },
   {
@@ -229,6 +250,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.Infotainment.Media.Played.Source",
+    "ask_prompt": {
+      "source": "라디오, USB, 블루투스, 인터넷 중 어떤 소스로 바꿀까요?"
+    },
     "ext": false
   },
   {
@@ -260,12 +284,15 @@
       "artist": "Vehicle.Cabin.Infotainment.Media.Played.Artist",
       "track": "Vehicle.Cabin.Infotainment.Media.Played.Track"
     },
+    "ask_prompt": {
+      "field": "곡 제목, 가수, 앨범 중 무엇을 알려드릴까요?"
+    },
     "ext": false
   },
   {
     "name": "set_window_position",
     "domain": "settings",
-    "description": "Open or close windows to a position (0 closed, 100 fully open). Use for any request to open, close, lower, or raise a window. Do not use for doors or the sunroof.",
+    "description": "Set window position (0 closed, 100 fully open); lowering a window (내려) opens it toward 100 and raising it (올려) closes it toward 0. Use for any request to open, close, lower, raise, or adjust a window. Do not use for doors or the sunroof.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -298,6 +325,9 @@
       "speed_below_60"
     ],
     "vss": "Vehicle.Cabin.Door.{window}.Window.Position",
+    "ask_prompt": {
+      "position": "창문을 얼마나 열까요?"
+    },
     "ext": false
   },
   {
@@ -329,6 +359,9 @@
     },
     "precondition": [],
     "vss": "Vehicle.Cabin.Door.{door}.IsLocked",
+    "ask_prompt": {
+      "locked": "문을 잠글까요, 잠금을 풀까요?"
+    },
     "ext": false
   },
   {
@@ -349,6 +382,9 @@
     },
     "precondition": [],
     "vss": "Vehicle.Body.Lights.Hazard.IsSignaling",
+    "ask_prompt": {
+      "is_on": "비상등을 켤까요, 끌까요?"
+    },
     "ext": false
   },
   {
@@ -369,6 +405,9 @@
     },
     "precondition": [],
     "vss": "Vehicle.Body.Horn.IsActive",
+    "ask_prompt": {
+      "is_active": "경적을 울릴까요, 멈출까요?"
+    },
     "ext": false
   },
   {
@@ -396,6 +435,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.Infotainment.Navigation.Mute",
+    "ask_prompt": {
+      "state": "안내 음성을 끌까요, 켤까요, 경고음만 남길까요?"
+    },
     "ext": false
   },
   {
@@ -421,6 +463,9 @@
       "power_on"
     ],
     "vss": "Vehicle.Cabin.Infotainment.Navigation.Volume",
+    "ask_prompt": {
+      "value": "안내 음성 볼륨을 얼마로 할까요?"
+    },
     "ext": false
   },
   {
@@ -448,6 +493,9 @@
       "latitude": "Vehicle.CurrentLocation.Latitude",
       "longitude": "Vehicle.CurrentLocation.Longitude"
     },
+    "ask_prompt": {
+      "field": "위도와 경도 중 무엇을 알려드릴까요?"
+    },
     "ext": false
   },
   {
@@ -472,6 +520,9 @@
     "vss": {
       "latitude": "Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Latitude",
       "longitude": "Vehicle.Cabin.Infotainment.Navigation.DestinationSet.Longitude"
+    },
+    "ask_prompt": {
+      "place_name": "어디로 안내할까요?"
     },
     "ext": false
   }

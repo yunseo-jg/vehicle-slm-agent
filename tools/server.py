@@ -15,6 +15,7 @@ from __future__ import annotations
 import inspect
 import json
 import logging
+import os
 import sys
 from collections.abc import Callable
 from pathlib import Path
@@ -39,6 +40,11 @@ log = logging.getLogger(__name__)
 
 mcp = MCPServer("vehicle")
 state = VehicleState()
+
+# 시작 상태 덮어쓰기. 데모·평가에서 서버를 띄울 때 쓴다
+#   VEHICLE_STATE_OVERRIDES='{"Vehicle.Speed": 80}' python tools/server.py
+for _key, _value in json.loads(os.environ.get("VEHICLE_STATE_OVERRIDES") or "{}").items():
+    state.set(_key, _value)
 
 # 도구 이름 → 구현. 도메인 모듈을 추가하면 여기에 HANDLERS 를 합친다
 HANDLERS: dict[str, Callable[..., dict]] = {

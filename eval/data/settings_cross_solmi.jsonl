@@ -1,0 +1,5 @@
+{"id": "settings_101", "utt": "경적 울려", "expected": {"tool": "set_horn", "args": {"is_active": true}}, "type": "direct"}
+{"id": "settings_102", "utt": "비상등 이제 꺼도 돼", "state": {"Vehicle.Body.Lights.Hazard.IsSignaling": true}, "expected": {"tool": "set_hazard_lights", "args": {"is_on": false}}, "type": "direct"}
+{"id": "settings_103", "utt": "비 들이친다", "state": {"Vehicle.Cabin.Door.Row1.DriverSide.Window.Position": 50}, "expected": {"tool": "set_window_position", "args": {"position": 0}}, "type": "indirect"}
+{"id": "settings_104", "turns": ["창문 전부 열어 줘", "아 운전석은 닫아"], "expected": {"tool": "set_window_position", "args": {"window": "driver", "position": 0}}, "type": "multiturn"}
+{"id": "settings_105", "utt": "뒷좌석 창문 좀 열어 줘", "state": {"Vehicle.Speed": 60}, "expected": {"tool": null}, "type": "unsafe"}

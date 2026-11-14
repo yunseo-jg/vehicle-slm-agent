@@ -1,0 +1,5 @@
+{"id": "settings_401", "turns": ["뒤에 차 오니까 비상등 켜 둬", "이제 됐어, 다시 꺼"], "expected": {"tool": "set_hazard_lights", "args": {"is_on": false}}, "type": "multiturn"}
+{"id": "settings_402", "turns": ["문 전부 잠가 줘", "아 조수석은 다시 풀어"], "expected": {"tool": "set_door_lock", "args": {"door": "passenger", "locked": false}}, "type": "multiturn"}
+{"id": "settings_403", "utt": "자전거가 앞에서 안 비켜 주네, 빵 한 번 눌러", "expected": {"tool": "set_horn", "args": {"is_active": true}}, "type": "indirect"}
+{"id": "settings_404", "utt": "트렁크 좀 열어 줘", "expected": {"tool": null}, "type": "no_tool"}
+{"id": "settings_405", "utt": "창문 반만 내려 줘", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "blocked"}

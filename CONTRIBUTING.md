@@ -1,6 +1,6 @@
 # CONTRIBUTING
 
-5명이 같은 코드를 만지고, 각자 AI 도구를 쓰면서도 결과물이 하나로 합쳐지게 하기 위한 규칙이다.
+4명이 같은 코드를 만지고, 각자 AI 도구를 쓰면서도 결과물이 하나로 합쳐지게 하기 위한 규칙이다.
 규칙이 불편하면 바꾸자고 이슈를 올린다. 몰래 안 지키는 것보다 낫다.
 
 ## 1. 브랜치
@@ -27,7 +27,7 @@
   - `eval(data): 공조 평가 문장 50건 추가`
   - `docs(ontology): precondition 종류 설명`
 - 타입: `feat` `fix` `eval` `docs` `refactor` `test` `chore`
-- 범위: 폴더명 또는 도메인명 (`hvac` `media` `nav` `phone` `status` `sim` `agent` `eval` `ontology`)
+- 범위: 폴더명 또는 도메인명 (`hvac` `media` `nav` `settings` `sim` `agent` `eval` `ontology`)
 - 내용은 한국어로 써도 된다. 무엇을 왜 바꿨는지가 보이면 됨
 - 생성물(`ontology/generated/`)은 원천 변경과 같은 커밋에 넣는다
 
@@ -35,7 +35,7 @@
 
 - 주차별 할 일은 전부 이슈로 만든다. 회의에서 정한 것 → 그날 밤 안에 이슈 등록
 - 제목: `[도메인] 할 일` (`[hvac] 온도·풍량 도구 스키마 작성`)
-- 라벨: `domain:hvac` `domain:media` `domain:nav` `domain:phone` `domain:status` / `area:agent` `area:eval` `area:sim` `area:training` / `week:3`
+- 라벨: `domain:hvac` `domain:media` `domain:nav` `domain:settings` / `area:agent` `area:eval` `area:sim` `area:training` / `week:3`
 - 담당자 지정 필수. 담당자 없는 이슈는 아무도 안 한다
 
 ## 4. PR

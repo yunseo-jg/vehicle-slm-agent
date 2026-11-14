@@ -12,7 +12,7 @@ vehicle.yaml ──build_schema.py──▶ generated/tools.json          (MCP �
 | 필드 | 필수 | 설명 |
 |------|------|------|
 | `id` | O | 도구 이름. `동사_도메인_대상`, 소문자 스네이크 |
-| `domain` | O | `hvac` `media` `nav` `phone_manual` `settings` `status` |
+| `domain` | O | `hvac` `media` `nav` `settings` |
 | `description` | O | 모델에게 보여줄 설명. 언제 쓰는지 + 언제 쓰면 안 되는지. 영어 권장, 3문장 이내 |
 | `vss` | O | VSS 경로. `{zone}` 같은 자리표시자는 `instance_map`으로 펼침. get 계열은 `field: path` 맵. 없으면 `null` |
 | `ext` | | VSS에 없는 확장 기능이면 `true` |

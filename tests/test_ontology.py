@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 ONTO = load_ontology()
 ID_RE = re.compile(r"^(set|get|search|call|send|start|stop)_[a-z0-9_]+$")
 PRECOND_RE = re.compile(r"^(power_on|parked|speed_below_\d+)$")
-DOMAINS = {"hvac", "media", "nav", "phone_manual", "settings", "status"}
+DOMAINS = {"hvac", "media", "nav", "settings"}
 
 
 def test_ids_unique_and_named():

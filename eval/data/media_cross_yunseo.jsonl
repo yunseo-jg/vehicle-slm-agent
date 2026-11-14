@@ -1,0 +1,5 @@
+{"id": "media_201", "utt": "음악 소리 칠십으로 키워 줘", "expected": {"tool": "set_media_volume", "args": {"value": 70}}, "type": "direct"}
+{"id": "media_202", "utt": "인터넷 라디오로 돌려 줘", "expected": {"tool": "set_media_source", "args": {"source": "INTERNET"}}, "type": "direct"}
+{"id": "media_203", "utt": "음악 때문에 옆 사람 말이 안 들려", "state": {"Vehicle.Cabin.Infotainment.Media.Volume": 80}, "expected": {"tool": "set_media_volume"}, "type": "indirect"}
+{"id": "media_204", "turns": ["USB에 있는 노래 틀어 줘", "소리는 반으로 줄여"], "expected": {"tool": "set_media_volume", "args": {"value": 50}}, "type": "multiturn"}
+{"id": "media_205", "utt": "음악 소스 좀 바꿔 봐", "expected": {"ask": true}, "type": "missing_arg"}

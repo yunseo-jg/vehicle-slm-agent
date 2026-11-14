@@ -1,0 +1,5 @@
+{"id": "hvac_201", "utt": "뒷자리 바람 제일 세게 틀어 줘", "expected": {"tool": "set_hvac_fan_speed", "args": {"zone": "rear", "value": 100}}, "type": "direct"}
+{"id": "hvac_202", "utt": "에어컨 이제 그만 꺼 줘", "state": {"Vehicle.Cabin.HVAC.IsAirConditioningActive": true}, "expected": {"tool": "set_hvac_ac_power", "args": {"enabled": false}}, "type": "direct"}
+{"id": "hvac_203", "utt": "앞유리 김 다 없어졌네", "state": {"Vehicle.Cabin.HVAC.IsFrontDefrosterActive": true}, "expected": {"tool": "set_hvac_defroster", "args": {"enabled": false}}, "type": "indirect"}
+{"id": "hvac_204", "turns": ["에어컨 켜 줘", "바람은 약하게 해"], "expected": {"tool": "set_hvac_fan_speed"}, "type": "multiturn"}
+{"id": "hvac_205", "utt": "통풍 시트 틀어 줘", "expected": {"tool": null}, "type": "no_tool"}

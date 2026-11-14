@@ -1,0 +1,5 @@
+{"id": "nav_201", "utt": "학교까지 길 안내해 줘", "expected": {"tool": "set_nav_destination", "args": {"place_name": "학교"}}, "type": "direct"}
+{"id": "nav_202", "utt": "출근해야 되니까 길 좀 찾아 줘", "expected": {"tool": "set_nav_destination", "args": {"place_name": "회사"}}, "type": "indirect"}
+{"id": "nav_203", "turns": ["강남역으로 안내해 줘", "아니다 서울역으로 가자"], "expected": {"tool": "set_nav_destination", "args": {"place_name": "서울역"}}, "type": "multiturn"}
+{"id": "nav_204", "utt": "목적지 좀 설정해 줘", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "nav_205", "utt": "집까지 길 안내 시작해", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "blocked"}

@@ -27,6 +27,7 @@ from mcp_types import ToolAnnotations  # noqa: E402
 from pydantic import Field  # noqa: E402
 
 from sim.state import VehicleState  # noqa: E402
+from tools import hvac as hvac_tools  # noqa: E402
 from tools import media as media_tools  # noqa: E402
 from tools import settings as settings_tools  # noqa: E402
 from tools import status as status_tools  # noqa: E402
@@ -41,6 +42,7 @@ state = VehicleState()
 
 # 도구 이름 → 구현. 도메인 모듈을 추가하면 여기에 HANDLERS 를 합친다
 HANDLERS: dict[str, Callable[..., dict]] = {
+    **hvac_tools.HANDLERS,
     **media_tools.HANDLERS,
     **status_tools.HANDLERS,
     **settings_tools.HANDLERS,

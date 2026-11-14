@@ -4,7 +4,7 @@
     uv run python scripts/run_graph_demo.py --turns "창문" "반만"
     uv run python scripts/run_graph_demo.py --state Vehicle.Speed=80 "창문 열어"
 
-모델은 .env 의 LLM_PROVIDER(openai | google | ollama) 와 LLM_MODEL 로 고른다.
+모델은 .env 의 LLM_PROVIDER(openai | google | ollama) 와 LLM_MODEL 로 고른다 (agent/llm.py).
 tools/server.py 를 자식 프로세스로 띄워 MCP 로 도구를 받는다.
 """
 
@@ -25,36 +25,11 @@ from langchain_core.messages import HumanMessage  # noqa: E402
 from mcp import Client, StdioServerParameters  # noqa: E402
 
 from agent.graph import build_graph  # noqa: E402
+from agent.llm import make_llm  # noqa: E402
 from agent.mcp_tools import load_mcp_tools  # noqa: E402
 
 INITIAL_STATE = ROOT / "ontology" / "generated" / "initial_state.json"
 SERVER = ROOT / "tools" / "server.py"
-
-
-def make_llm():
-    provider = os.environ.get("LLM_PROVIDER", "").lower()
-    model = os.environ.get("LLM_MODEL", "")
-    if not provider or not model:
-        raise SystemExit(".env 에 LLM_PROVIDER 와 LLM_MODEL 을 넣어 주세요 (.env.example 참고)")
-    try:
-        if provider == "openai":
-            from langchain_openai import ChatOpenAI
-
-            return ChatOpenAI(model=model, temperature=0)
-        if provider == "google":
-            from langchain_google_genai import ChatGoogleGenerativeAI
-
-            return ChatGoogleGenerativeAI(model=model, temperature=0)
-        if provider == "ollama":
-            from langchain_ollama import ChatOllama
-
-            return ChatOllama(model=model, temperature=0, base_url=os.environ.get("OLLAMA_HOST"))
-    except ImportError as error:
-        extra = "local" if provider == "ollama" else "cloud"
-        raise SystemExit(
-            f"{error.name} 가 없습니다. `uv sync --extra {extra}` 후 다시 실행"
-        ) from error
-    raise SystemExit(f"LLM_PROVIDER 는 openai | google | ollama 중 하나여야 합니다: {provider!r}")
 
 
 def parse_state(pairs: list[str]) -> dict:

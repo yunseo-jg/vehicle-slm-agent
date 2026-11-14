@@ -1,0 +1,5 @@
+{"id": "nav_301", "utt": "현재 위치 경도 숫자만 알려 줘", "expected": {"tool": "get_nav_location", "args": {"field": "longitude"}}, "type": "direct"}
+{"id": "nav_302", "utt": "강남역으로 목적지 잡아 줘", "expected": {"tool": "set_nav_destination", "args": {"place_name": "강남역"}}, "type": "direct"}
+{"id": "nav_303", "utt": "길 안내 목소리 좀 낮춰 줘", "state": {"Vehicle.Cabin.Infotainment.Navigation.Volume": 70}, "expected": {"tool": "set_nav_volume", "args": {"value": 50}}, "type": "indirect"}
+{"id": "nav_304", "turns": ["길 안내 음성 꺼 줘", "아니, 경고음은 들리게 해 줘"], "expected": {"tool": "set_nav_mute", "args": {"state": "ALERT_ONLY"}}, "type": "multiturn"}
+{"id": "nav_305", "utt": "이 경로 통행료 얼마야?", "expected": {"tool": null}, "type": "no_tool"}

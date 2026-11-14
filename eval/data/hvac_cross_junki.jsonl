@@ -1,0 +1,5 @@
+{"id": "hvac_301", "utt": "왼쪽 뒷자리 열선 꺼 줘", "state": {"Vehicle.Cabin.Seat.Row2.DriverSide.HeatingCooling": 50}, "expected": {"tool": "set_hvac_seat_heating", "args": {"seat": "rear_left", "value": 0}}, "type": "direct"}
+{"id": "hvac_302", "utt": "운전석 온도 좀 낮춰 줄래", "state": {"Vehicle.Cabin.HVAC.Station.Row1.Driver.Temperature": 26}, "expected": {"tool": "set_hvac_temperature", "args": {"zone": "driver", "value": 24}}, "type": "indirect"}
+{"id": "hvac_303", "utt": "열선 세기 바꿔 줘", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "hvac_304", "turns": ["뒷자리 온도 23도로 맞춰 줘", "거기서 2도만 올려 줘"], "expected": {"tool": "set_hvac_temperature", "args": {"zone": "rear", "value": 25}}, "type": "multiturn"}
+{"id": "hvac_305", "utt": "뒷유리 성에 제거 켜 줘", "expected": {"tool": null}, "type": "no_tool"}

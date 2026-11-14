@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>차량 에이전트 검수</title>
+<style>
+:root {
+  --bg: #f3f4f6; --panel: #ffffff; --ink: #14171a; --muted: #6a727d; --line: #e2e5e9; --soft: #f1f2f4;
+  --blue: #2f6fed; --yellow: #c98a00; --red: #e0444a;
+  --blue-soft: rgba(47,111,237,.12); --yellow-soft: rgba(217,154,0,.16); --red-soft: rgba(224,68,74,.12);
+  --glass: rgba(255,255,255,.62); --glass-2: rgba(20,23,26,.045); --glass-line: rgba(20,23,26,.2);
+  --shadow: 0 1px 2px rgba(20,23,26,.04), 0 8px 24px rgba(20,23,26,.06);
+  --radius: 16px; --ease: 240ms cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1013; --panel: #171a1e; --ink: #eceef1; --muted: #98a0aa; --line: #292d33; --soft: #1f2328;
+    --blue: #5b8ff5; --yellow: #e2ad2b; --red: #f0666b;
+    --blue-soft: rgba(91,143,245,.18); --yellow-soft: rgba(226,173,43,.18); --red-soft: rgba(240,102,107,.18);
+    --glass: rgba(255,255,255,.055); --glass-2: rgba(255,255,255,.04); --glass-line: rgba(255,255,255,.24);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.28);
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); overflow: hidden;
+  font: 14px/1.5 system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font: inherit; color: inherit; }
+button {
+  border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 7px 13px; cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), opacity var(--ease), transform var(--ease);
+}
+button:hover { background: var(--soft); }
+button:active { transform: scale(.98); }
+button:disabled { opacity: .45; cursor: default; }
+button.primary { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+button.primary:hover { opacity: .88; background: var(--ink); }
+input[type=text], select {
+  border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 7px 11px; outline: none;
+  transition: border-color var(--ease);
+}
+input[type=text]:focus, select:focus { border-color: var(--ink); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+.muted { color: var(--muted); }
+
+/* ---------- 상단 ---------- */
+header {
+  height: 56px; display: flex; align-items: center; gap: 20px; padding: 0 22px;
+  border-bottom: 1px solid var(--line); background: var(--panel);
+}
+.brand { font-size: 16px; font-weight: 650; letter-spacing: -.01em; margin-right: auto; }
+.field { display: flex; align-items: center; gap: 8px; }
+.field label { color: var(--muted); font-size: 12px; }
+#model { width: 210px; }
+#reviewer { width: 110px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); max-width: 300px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; transition: background var(--ease); }
+.status.ready i { background: var(--ink); }
+.status.error i { background: var(--red); }
+
+/* ---------- 배치 ---------- */
+main { height: calc(100vh - 56px); display: grid; grid-template-columns: 45fr 55fr; gap: 16px; padding: 16px; }
+.card { background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); }
+.left, .right { min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+
+/* ---------- 차량 ---------- */
+.stage { flex: 1; min-height: 0; position: relative; display: grid; grid-template-columns: 1fr 200px; gap: 8px; padding: 14px 16px; }
+#car { width: 100%; height: 100%; display: block; }
+.side { display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; overflow: hidden auto; padding: 4px 8px 0 0; }
+.side h4 { margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--muted); }
+.kv { display: flex; justify-content: space-between; gap: 8px; padding: 3px 7px; margin: 0 -7px; border-radius: 8px; font-size: 12.5px;
+  transition: background var(--ease), color var(--ease); }
+.kv span:first-child { color: var(--muted); white-space: nowrap; }
+.kv span:last-child { text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kv.changed { background: var(--blue-soft); } .kv.changed span:last-child { color: var(--blue); font-weight: 600; }
+.kv.refused { background: var(--red-soft); } .kv.asked { background: var(--yellow-soft); }
+
+svg text { fill: var(--ink); font-family: inherit; }
+.body { fill: var(--glass); stroke: var(--glass-line); stroke-width: 1.2; }
+.glassy { fill: var(--glass-2); stroke: var(--glass-line); stroke-width: .8; }
+.part * { transition: fill var(--ease), stroke var(--ease), opacity var(--ease), transform var(--ease), stroke-width var(--ease); }
+.shape { fill: var(--glass-2); stroke: var(--glass-line); stroke-width: 1; }
+.level { fill: var(--ink); opacity: .16; transform-box: fill-box; transform-origin: top; }
+.lbl { font-size: 11px; fill: var(--muted); }
+.val { font-size: 12px; font-weight: 600; }
+.val.zone { font-size: 10.5px; }
+.tiny { font-size: 9.5px; fill: var(--muted); }
+.on .shape { fill: var(--ink); stroke: var(--ink); } .on text { fill: var(--panel); }
+.lock .shackle { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linecap: round; }
+.lock .box { fill: var(--panel); stroke: var(--muted); stroke-width: 1.2; }
+.lock.on .box { fill: var(--ink); stroke: var(--ink); } .lock.on .shackle { stroke: var(--ink); }
+.lock:not(.on) .shackle { transform: translate(3px, -2px) rotate(18deg); transform-box: fill-box; transform-origin: left bottom; }
+.lamp { fill: var(--glass-line); } .hazard.on .lamp { fill: var(--ink); animation: blink 900ms ease-in-out infinite; }
+.horn .wave { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linecap: round; opacity: 0; }
+.horn.on .wave { opacity: .8; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .15; } }
+.part.changed .shape, .part.changed .box { stroke: var(--blue); stroke-width: 2; fill: var(--blue-soft); }
+.part.changed .val, .part.changed .lbl { fill: var(--blue); }
+.part.changed .level { fill: var(--blue); opacity: .45; }
+.part.changed .lamp, .part.changed .wave { fill: var(--blue); stroke: var(--blue); }
+.part.refused .shape, .part.refused .box { stroke: var(--red); stroke-width: 2; fill: var(--red-soft); }
+.part.refused .val, .part.refused .lbl { fill: var(--red); }
+.part.asked .shape, .part.asked .box { stroke: var(--yellow); stroke-width: 2; fill: var(--yellow-soft); }
+.part.asked .val, .part.asked .lbl { fill: var(--yellow); }
+
+#bubble {
+  position: absolute; width: max-content; max-width: 270px; padding: 9px 13px; border-radius: 14px; background: var(--panel);
+  border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 13px; line-height: 1.45; pointer-events: none;
+  opacity: 0; transform: translate(-50%, calc(-100% - 4px)); transition: opacity var(--ease), transform var(--ease), left var(--ease), top var(--ease);
+}
+#bubble.show { opacity: 1; transform: translate(-50%, calc(-100% - 12px)); }
+#bubble b { display: block; font-size: 11px; font-weight: 600; letter-spacing: .03em; margin-bottom: 2px; }
+#bubble::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 10px; height: 10px; background: inherit;
+  border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); }
+#bubble.executed { border-color: var(--blue); } #bubble.executed b { color: var(--blue); } #bubble.executed::after { border-color: var(--blue); }
+#bubble.asked { border-color: var(--yellow); } #bubble.asked b { color: var(--yellow); } #bubble.asked::after { border-color: var(--yellow); }
+#bubble.refused { border-color: var(--red); } #bubble.refused b { color: var(--red); } #bubble.refused::after { border-color: var(--red); }
+
+.changes { min-height: 30px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 0 4px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: var(--soft); font-size: 12px; }
+.chip.blue { background: var(--blue-soft); color: var(--blue); }
+.chip.yellow { background: var(--yellow-soft); color: var(--yellow); }
+.chip.red { background: var(--red-soft); color: var(--red); }
+.controls { display: flex; align-items: center; gap: 18px; padding: 12px 18px; }
+.controls label { font-size: 12px; color: var(--muted); }
+.controls input[type=range] { width: 170px; accent-color: var(--ink); }
+.controls output { display: inline-block; width: 68px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.toggle button { border: 0; border-radius: 0; padding: 6px 12px; }
+.toggle button.sel { background: var(--ink); color: var(--panel); }
+
+/* ---------- 우측 ---------- */
+.tabs { display: flex; gap: 4px; padding: 6px; }
+.tabs button { border: 0; background: transparent; padding: 8px 18px; border-radius: 11px; font-weight: 550; color: var(--muted); }
+.tabs button.sel { background: var(--ink); color: var(--panel); }
+.panel { flex: 1; min-height: 0; display: none; flex-direction: column; gap: 12px; padding: 16px 18px; }
+.panel.sel { display: flex; }
+h3 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: var(--muted); }
+.row { display: flex; align-items: center; gap: 8px; }
+.grow { flex: 1; min-width: 0; }
+
+.chat { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow: auto; padding-right: 4px; }
+.msg { max-width: 82%; padding: 7px 12px; border-radius: 14px; font-size: 13.5px; animation: rise var(--ease); }
+.msg.user { align-self: flex-end; background: var(--ink); color: var(--panel); border-bottom-right-radius: 5px; }
+.msg.bot { align-self: flex-start; background: var(--soft); border-bottom-left-radius: 5px; }
+.msg.pending { opacity: .55; }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+#utter { flex: 1; font-size: 15px; padding: 10px 14px; }
+.picked { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; background: var(--soft); font-size: 12.5px; }
+.filters select, .filters input { padding: 6px 9px; font-size: 12.5px; }
+.list { flex: 1; min-height: 0; overflow: auto; border-top: 1px solid var(--line); margin: 0 -18px -16px; }
+.case { display: grid; grid-template-columns: 104px 92px 1fr; gap: 10px; align-items: baseline; padding: 8px 18px; cursor: pointer;
+  border-bottom: 1px solid var(--line); transition: background var(--ease); }
+.case:hover { background: var(--soft); }
+.case.sel { background: var(--soft); box-shadow: inset 3px 0 0 var(--ink); }
+.case .utt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 흐름 */
+#flow { flex: 0 1 auto; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 14px; padding: 4px; margin: -4px; }
+.turn h5 { margin: 0 0 8px; font-size: 13px; font-weight: 550; }
+.turn h5 span { color: var(--muted); font-weight: 400; margin-right: 8px; }
+.nodes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; align-items: stretch; }
+.node { position: relative; margin-right: 22px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 14px; cursor: pointer;
+  background: var(--panel); opacity: .42; transition: opacity var(--ease), border-color var(--ease), background var(--ease), box-shadow var(--ease); }
+.node:last-child { margin-right: 0; }
+.node:not(:last-child)::after { content: ""; position: absolute; right: -19px; top: 50%; width: 15px; height: 1px; background: var(--line); transition: background var(--ease); }
+.node.lit { opacity: 1; border-color: var(--ink); } .node.lit::after { background: var(--ink); }
+.node.run { opacity: 1; border-color: var(--blue); background: var(--blue-soft); }
+.node.ask { opacity: 1; border-color: var(--yellow); background: var(--yellow-soft); }
+.node.refuse { opacity: 1; border-color: var(--red); background: var(--red-soft); }
+.node.skipped { opacity: .25; border-style: dashed; }
+.node.sel { box-shadow: 0 0 0 3px var(--soft), 0 0 0 4px var(--ink); }
+.node strong { display: block; font-size: 13px; }
+.node small { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.detail { border-top: 1px solid var(--line); padding-top: 12px; display: grid; grid-template-columns: 96px 1fr; gap: 7px 14px; font-size: 13px; flex: 1 1 0; min-height: 120px; overflow: auto; align-content: start; margin: 0; }
+.detail dt { color: var(--muted); } .detail dd { margin: 0; word-break: break-word; }
+.files { display: flex; flex-wrap: wrap; gap: 5px; }
+.files span { padding: 1px 8px; border-radius: 7px; background: var(--soft); }
+.empty { color: var(--muted); padding: 24px 0; text-align: center; }
+
+/* 평가 */
+.compare { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: start; padding: 12px 14px; border-radius: 14px; background: var(--soft); font-size: 13px; }
+.compare h3 { margin-bottom: 4px; }
+.marks { display: flex; gap: 6px; }
+.mark { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 12px; border: 1px solid var(--ink); }
+.mark.ok { background: var(--ink); color: var(--panel); }
+.mark.no { background: transparent; color: var(--ink); border-style: dashed; text-decoration: line-through; }
+.summary { display: flex; flex-wrap: wrap; gap: 6px; min-height: 24px; }
+.table { flex: 1; min-height: 0; overflow: auto; border-top: 1px solid var(--line); margin: 0 -18px -16px; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { position: sticky; top: 0; background: var(--panel); text-align: left; font-weight: 600; color: var(--muted); padding: 7px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { padding-left: 18px; }
+td { padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+tbody tr { cursor: pointer; transition: background var(--ease); animation: rise var(--ease); } tbody tr:hover, tbody tr.sel { background: var(--soft); }
+.o { font-weight: 700; } .x { color: var(--muted); font-weight: 700; text-decoration: line-through; }
+.pill { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 11.5px; background: var(--soft); }
+.pill.executed { background: var(--blue-soft); color: var(--blue); }
+.pill.asked { background: var(--yellow-soft); color: var(--yellow); }
+.pill.refused { background: var(--red-soft); color: var(--red); }
+
+/* 결과와 검수 기록 */
+.result { padding: 12px 18px; display: flex; flex-direction: column; gap: 9px; }
+.result .line { display: flex; align-items: center; gap: 10px; min-height: 24px; }
+#answer { font-size: 15px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#memo { flex: 1; min-width: 80px; }
+.result button { white-space: nowrap; padding: 7px 11px; }
+#toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 12px; background: var(--ink); color: var(--panel);
+  font-size: 13px; opacity: 0; pointer-events: none; transition: opacity var(--ease), transform var(--ease); z-index: 9; }
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">차량 에이전트 검수</div>
+  <div class="field">
+    <label for="model">모델</label>
+    <input type="text" id="model" class="mono" spellcheck="false" placeholder="openai:gpt-4o-mini">
+    <button id="applyModel">적용</button>
+    <span class="status" id="modelStatus"><i></i><span>준비 중</span></span>
+  </div>
+  <div class="field">
+    <label for="reviewer">검수자</label>
+    <input type="text" id="reviewer" placeholder="이름">
+  </div>
+</header>
+
+<main>
+  <section class="left">
+    <div class="stage card">
+      <svg id="car" viewBox="58 22 324 590" role="img" aria-label="위에서 본 차량 상태"></svg>
+      <aside class="side">
+        <div><h4>중앙 화면 · 미디어</h4><div id="sideMedia"></div></div>
+        <div><h4>중앙 화면 · 내비</h4><div id="sideNav"></div></div>
+        <div><h4>주행</h4><div id="sideOther"></div></div>
+      </aside>
+      <div id="bubble"></div>
+    </div>
+    <div class="changes" id="changes"></div>
+    <div class="controls card">
+      <div><label>시작 속도</label><br><input type="range" id="speed" min="0" max="150" step="5" value="0"> <output id="speedOut">0 km/h</output></div>
+      <div><label>전원</label><br><span class="toggle" id="power"><button data-v="ON">ON</button><button data-v="OFF">OFF</button></span></div>
+      <div class="grow"></div>
+      <button id="reset">초기 상태로</button>
+    </div>
+  </section>
+
+  <section class="right">
+    <div class="card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+      <nav class="tabs">
+        <button data-tab="run" class="sel">실행</button>
+        <button data-tab="flow">흐름</button>
+        <button data-tab="eval">평가</button>
+      </nav>
+
+      <div class="panel sel" id="tab-run">
+        <div class="chat" id="chat"></div>
+        <div class="row">
+          <input type="text" id="utter" placeholder="말해 보세요. 예: 조수석 창문 내려" autocomplete="off">
+          <button class="primary" id="send">실행</button>
+          <button id="newChat">새 대화</button>
+        </div>
+        <div class="picked" id="picked" hidden></div>
+        <div class="row filters" id="filters-run"></div>
+        <div class="list" id="cases"></div>
+      </div>
+
+      <div class="panel" id="tab-flow">
+        <div id="flow"><div class="empty">문장을 실행하면 처리 단계가 순서대로 켜집니다.</div></div>
+        <dl class="detail" id="detail" hidden></dl>
+      </div>
+
+      <div class="panel" id="tab-eval">
+        <div id="compare"><div class="empty" style="padding:6px 0">평가셋에서 고른 건을 실행하면 정답과 실제가 나란히 보입니다.</div></div>
+        <div class="row filters" id="filters-eval"></div>
+        <div class="row">
+          <button class="primary" id="runAll">전체 실행</button>
+          <button id="stopAll" disabled>중단</button>
+          <label class="row" style="gap:5px"><input type="checkbox" id="failOnly"> 실패만 보기</label>
+          <span class="muted grow" id="progress" style="text-align:right"></span>
+        </div>
+        <div class="summary" id="summary"></div>
+        <div class="table"><table><thead><tr><th>id</th><th>유형</th><th>발화</th><th>정답</th><th>실제</th><th>결과</th><th>도구</th><th>인자</th><th>상태</th></tr></thead><tbody id="rows"></tbody></table></div>
+      </div>
+    </div>
+
+    <div class="result card">
+      <div class="line">
+        <span class="pill" id="outcome">대기</span>
+        <span id="answer" class="grow muted">아직 실행한 건이 없습니다.</span>
+        <span class="muted" id="latency"></span>
+      </div>
+      <div class="line">
+        <input type="text" id="memo" placeholder="검수 메모 한 줄">
+        <button data-cat="candidate" class="save" disabled>평가셋 추가 후보</button>
+        <button data-cat="expected" class="save" disabled>정답 기준 이의</button>
+        <button data-cat="code" class="save" disabled>코드·프롬프트 문제</button>
+        <button id="export" disabled hidden>평가셋 형식으로 내보내기</button>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const json = (v) => JSON.stringify(v ?? {});
+
+const S = {
+  meta: null, cases: [], specs: {},
+  start: {},            // 시작 상태 (초기 상태 + 조작)
+  shown: null,          // 지금 차량에 그린 실행 결과 (없으면 시작 상태)
+  turns: [],            // 이어가는 대화의 지난 발화
+  chat: [],             // 화면에 보이는 말풍선
+  picked: null,         // 평가셋에서 고른 건
+  last: null,           // 마지막 실행 결과 {run_id, record, score, model, flow}
+  filter: { type: "", domain: "", q: "" },
+  rows: [], batch: { on: false, stop: false }, failOnly: false, busy: false,
+  flowSel: null,
+};
+
+/* ================= 상태 키 → 부위 =================
+   VSS 경로 패턴으로 부위를 정한다. 같은 패턴의 신호가 늘면 자동으로 그려지고,
+   어느 패턴에도 안 맞는 키는 "주행" 목록에 그대로 나온다. */
+const RULES = [
+  { kind: "window", re: /^Vehicle\.Cabin\.Door\.(Row\d+)\.(\w+)\.Window\.Position$/, name: "창문", unit: "%" },
+  { kind: "lock", re: /^Vehicle\.Cabin\.Door\.(Row\d+)\.(\w+)\.IsLocked$/, name: "문", bool: ["잠김", "열림"] },
+  { kind: "seat", re: /^Vehicle\.Cabin\.Seat\.(Row\d+)\.(\w+)\.HeatingCooling$/, name: "시트 열선" },
+  { kind: "zone", re: /^Vehicle\.Cabin\.HVAC\.Station\.(Row\d+)\.(\w+)\.(\w+)$/, field: 3 },
+  { kind: "flag", re: /^Vehicle\.Cabin\.HVAC\.(Is\w+)$/, single: 1 },
+  { kind: "media", re: /^Vehicle\.Cabin\.Infotainment\.Media\.(.+)$/, single: 1, side: "sideMedia" },
+  { kind: "nav", re: /^Vehicle\.Cabin\.Infotainment\.Navigation\.(.+)$/, single: 1, side: "sideNav" },
+  { kind: "hazard", re: /^Vehicle\.Body\.Lights\.Hazard\.IsSignaling$/, name: "비상등", bool: ["켜짐", "꺼짐"] },
+  { kind: "horn", re: /^Vehicle\.Body\.Horn\.IsActive$/, name: "경적", bool: ["울림", "꺼짐"] },
+];
+const FIELD = {
+  Temperature: ["온도", "°"], FanSpeed: ["풍량", ""], IsAirConditioningActive: ["에어컨"], IsFrontDefrosterActive: ["성에 제거"],
+  Action: ["재생"], Volume: ["볼륨"], "Played.Source": ["소스"], "Played.Track": ["곡"], "Played.Artist": ["가수"], "Played.Album": ["앨범"],
+  "DestinationSet.Latitude": ["목적지 위도"], "DestinationSet.Longitude": ["목적지 경도"], Mute: ["안내 음성"],
+  "Vehicle.Speed": ["속도", " km/h"], "Vehicle.LowVoltageSystemState": ["전원"], "Vehicle.IsMoving": ["주행 중"],
+  "Vehicle.Powertrain.Type": ["동력"], "Vehicle.CurrentLocation.Latitude": ["현재 위도"], "Vehicle.CurrentLocation.Longitude": ["현재 경도"],
+};
+const WORD = { PLAY: "재생", STOP: "정지", SKIP_FORWARD: "다음 곡", SKIP_BACKWARD: "이전 곡", MUTED: "꺼짐", UNMUTED: "켜짐", ALERT_ONLY: "경고음만", BLUETOOTH: "블루투스", INTERNET: "인터넷" };
+const NODES = [
+  ["tool_select", "도구 선택", "모델이 도구와 인자를 고른다"],
+  ["validate", "검증", "코드가 범위·조건을 검사한다"],
+  ["execute", "실행", "MCP 서버가 도구를 실행한다"],
+  ["respond", "응답", "코드가 고정 문장을 만든다"],
+];
+const OUTCOME = { executed: "실행", asked: "되묻기", refused: "거절", no_tool: "도구 없음", error: "오류" };
+
+function parseKey(key) {
+  for (const rule of RULES) {
+    const m = key.match(rule.re);
+    if (!m) continue;
+    if (rule.single) return { rule, kind: rule.kind, part: rule.kind === "flag" ? `flag:${m[1]}` : rule.kind, field: m[1] };
+    if (m.length >= 3) return { rule, kind: rule.kind, row: +m[1].slice(3), where: m[2], part: `${rule.kind}:${m[1]}.${m[2]}`, field: rule.field ? m[rule.field] : null };
+    return { rule, kind: rule.kind, part: rule.kind };
+  }
+  return { kind: "other", part: "other", field: key };
+}
+const isLeft = (where) => where.startsWith("Driver");
+function seatName(info) {
+  const alone = info.kind === "zone" && !Object.keys(S.meta.initial_state).some((k) => { const o = parseKey(k); return o.kind === "zone" && o.row === info.row && o.where !== info.where; });
+  if (info.row === 1) return isLeft(info.where) ? "운전석" : "조수석";
+  if (alone) return info.row === 2 ? "뒷좌석" : `${info.row}열`;
+  return `${info.row === 2 ? "뒤" : info.row + "열"} ${isLeft(info.where) ? "왼쪽" : "오른쪽"}`;
+}
+function label(key) {
+  const info = parseKey(key);
+  const field = FIELD[info.field] ? FIELD[info.field][0] : info.field;
+  if (info.kind === "other") return field.replace(/^Vehicle\./, "");
+  if (info.row) return `${seatName(info)} ${info.rule.name || field}`;
+  return info.rule.name || field;
+}
+function fmt(key, value) {
+  const info = parseKey(key);
+  if (value === null || value === undefined) return "없음";
+  if (typeof value === "boolean") return (info.rule && info.rule.bool ? info.rule.bool : ["켜짐", "꺼짐"])[value ? 0 : 1];
+  if (typeof value === "number") return `${Math.round(value * 1e4) / 1e4}${(info.rule && info.rule.unit) || (FIELD[info.field] && FIELD[info.field][1]) || ""}`;
+  return WORD[value] || String(value);
+}
+
+/* ================= 차량 그리기 ================= */
+const ROW_Y = (row) => 196 + (row - 1) * 160;
+const PARTS = {};       // part id → {keys, anchor:[x,y], paint(state, old)}
+function addPart(id, keys, anchor, svg, paint) {
+  PARTS[id] = { keys, anchor, paint, id };
+  return `<g class="part" data-part="${esc(id)}">${svg}</g>`;
+}
+function buildCar() {
+  const keys = Object.keys(S.meta.initial_state);
+  const group = {};
+  for (const key of keys) { const info = parseKey(key); (group[info.part] ||= []).push({ key, info }); }
+  let out = `
+    <path class="body" d="M160,40 Q220,24 280,40 Q320,54 320,112 L320,510 Q320,572 272,580 L168,580 Q120,572 120,510 L120,112 Q120,54 160,40 Z"/>
+    <path class="glassy" d="M146,130 Q220,106 294,130 L282,168 Q220,152 158,168 Z"/>
+    <path class="glassy" d="M158,492 Q220,506 282,492 L290,524 Q220,540 150,524 Z"/>
+    <rect class="glassy" x="140" y="170" width="160" height="318" rx="26"/>
+    <text class="tiny" x="220" y="604" text-anchor="middle">앞쪽이 위 · 왼쪽이 운전석</text>`;
+  const zoneRows = {};
+  for (const [id, items] of Object.entries(group)) {
+    const { info } = items[0];
+    const key = items[0].key;
+    if (info.kind === "seat") {
+      const x = isLeft(info.where) ? 150 : 228, y = ROW_Y(info.row);
+      out += addPart(id, [key], [x + 31, y + 10], `
+        <rect class="shape" x="${x}" y="${y}" width="62" height="90" rx="16"/>
+        <rect class="level" x="${x + 6}" y="${y + 6}" width="50" height="78" rx="11"/>
+        <rect class="glassy" x="${x + 14}" y="${y - 5}" width="34" height="11" rx="5"/>
+        <text class="val" x="${x + 31}" y="${y + 50}" text-anchor="middle"></text>
+        <text class="tiny" x="${x + 31}" y="${y + 66}" text-anchor="middle">열선</text>`,
+        (g, st) => { const v = st[key] || 0; $(".level", g).style.opacity = 0.04 + Math.min(Math.abs(v), 100) / 100 * 0.5; $(".val", g).textContent = v ? v : "꺼짐"; });
+    } else if (info.kind === "window") {
+      const left = isLeft(info.where), x = left ? 123 : 308, y = ROW_Y(info.row), tx = left ? 112 : 328;
+      out += addPart(id, [key], [left ? 100 : 340, y + 30], `
+        <rect class="shape" x="${x}" y="${y}" width="9" height="90" rx="4.5"/>
+        <rect class="level" x="${x}" y="${y}" width="9" height="90" rx="4.5"/>
+        <text class="lbl" x="${tx}" y="${y + 30}" text-anchor="${left ? "end" : "start"}">창문</text>
+        <text class="val" x="${tx}" y="${y + 46}" text-anchor="${left ? "end" : "start"}"></text>`,
+        (g, st, old) => { const v = st[key] || 0; $(".level", g).style.transform = `scaleY(${v / 100})`; $(".val", g).textContent = old !== undefined && old !== v ? `${old} → ${v}%` : `${v}%`; });
+    } else if (info.kind === "lock") {
+      const left = isLeft(info.where), y = ROW_Y(info.row) + 62, x = left ? 98 : 330, tx = left ? 92 : 348;
+      out += addPart(id, [key], [x + 6, y], `<g class="lock">
+        <path class="shackle" d="M${x + 2.5},${y + 6} v-3.5 a3.5,3.5 0 0 1 7,0 v3.5"/>
+        <rect class="box" x="${x}" y="${y + 6}" width="12" height="10" rx="2.5"/>
+        <text class="lbl" x="${tx}" y="${y + 15}" text-anchor="${left ? "end" : "start"}"></text></g>`,
+        (g, st) => { $(".lock", g).classList.toggle("on", !!st[key]); $("text", g).textContent = st[key] ? "잠김" : "열림"; });
+    } else if (info.kind === "zone") {
+      (zoneRows[info.row] ||= []).push({ id, items, info });
+    } else if (info.kind === "flag") {
+      const index = Object.keys(group).filter((p) => p.startsWith("flag:")).indexOf(id), x = 146 + index * 78;
+      out += addPart(id, [key], [x + 35, 92], `
+        <rect class="shape" x="${x}" y="92" width="70" height="22" rx="11"/>
+        <text class="lbl" x="${x + 35}" y="107" text-anchor="middle">${esc(label(key))}</text>`,
+        (g, st) => g.classList.toggle("on", !!st[key]));
+    } else if (info.kind === "hazard") {
+      out += addPart(id, [key], [220, 44], `<g class="hazard">${[[130, 56], [296, 56], [130, 552], [296, 552]].map(([x, y]) => `<rect class="lamp" x="${x}" y="${y}" width="14" height="9" rx="4"/>`).join("")}</g>`,
+        (g, st) => $(".hazard", g).classList.toggle("on", !!st[key]));
+    } else if (info.kind === "horn") {
+      out += addPart(id, [key], [220, 58], `<g class="horn"><circle class="shape" cx="220" cy="66" r="7"/>
+        <path class="wave" d="M207,58 a16,16 0 0 0 0,16"/><path class="wave" d="M233,58 a16,16 0 0 1 0,16"/>
+        <path class="wave" d="M200,52 a26,26 0 0 0 0,28"/><path class="wave" d="M240,52 a26,26 0 0 1 0,28"/></g>`,
+        (g, st) => $(".horn", g).classList.toggle("on", !!st[key]));
+    }
+  }
+  for (const [row, zones] of Object.entries(zoneRows)) {
+    for (const { id, items, info } of zones) {
+      const x = zones.length === 1 ? 220 : (isLeft(info.where) ? 181 : 259), y = ROW_Y(+row) - 9;
+      const ordered = [...items].sort((a, b) => (b.info.field === "Temperature") - (a.info.field === "Temperature"));
+      out += addPart(id, items.map((i) => i.key), [x, y - 10], `<text class="val zone" x="${x}" y="${y}" text-anchor="middle"></text>`,
+        (g, st) => { $("text", g).textContent = ordered.map((i) => `${i.info.field === "Temperature" ? "" : (FIELD[i.info.field] || [i.info.field])[0] + " "}${fmt(i.key, st[i.key])}`).join(" · "); });
+    }
+  }
+  // 중앙 화면: 미디어·내비 키는 옆 목록에 자세히, 차 안에는 요약만
+  const media = (group.media || []).map((i) => i.key), nav = (group.nav || []).map((i) => i.key);
+  if (media.length || nav.length) {
+    const pick = (list, f) => list.find((k) => k.endsWith(f));
+    out += addPart("screen", [...media, ...nav], [220, 291], `
+      <rect class="shape" x="164" y="291" width="112" height="38" rx="10"/>
+      <text class="tiny" x="220" y="306" text-anchor="middle" id="scrMedia"></text>
+      <text class="tiny" x="220" y="320" text-anchor="middle" id="scrNav"></text>`,
+      (g, st) => {
+        $("#scrMedia", g).textContent = media.length ? `미디어 ${fmt(pick(media, "Action"), st[pick(media, "Action")])} · ${st[pick(media, "Volume")] ?? ""}` : "";
+        $("#scrNav", g).textContent = nav.length ? `내비 안내 ${fmt(pick(nav, "Mute"), st[pick(nav, "Mute")])} · ${st[pick(nav, "Volume")] ?? ""}` : "";
+      });
+  }
+  $("#car").innerHTML = out;
+  // 옆 목록
+  const sideOf = (key) => { const info = parseKey(key); return info.rule && info.rule.side ? info.rule.side : info.kind === "other" ? "sideOther" : null; };
+  for (const id of ["sideMedia", "sideNav", "sideOther"]) $("#" + id).innerHTML = "";
+  for (const key of keys) {
+    const side = sideOf(key);
+    if (side) $("#" + side).insertAdjacentHTML("beforeend", `<div class="kv" data-key="${esc(key)}"><span>${esc(label(key))}</span><span></span></div>`);
+  }
+}
+
+/* state 를 그린다. base 를 주면 base 대비 바뀐 곳을 강조하고, marks 로 거절·되묻기 부위를 표시한다. */
+function paint(state, base = null, marks = {}) {
+  const changed = new Set(base ? Object.keys(state).filter((k) => json(state[k]) !== json(base[k])) : []);
+  for (const g of $$("#car .part")) {
+    const part = PARTS[g.dataset.part];
+    const key0 = part.keys[0];
+    part.paint(g, state, base && changed.has(key0) ? base[key0] : undefined);
+    g.classList.toggle("changed", part.keys.some((k) => changed.has(k)));
+    g.classList.toggle("refused", marks.kind === "refused" && part.keys.some((k) => marks.keys.has(k)));
+    g.classList.toggle("asked", marks.kind === "asked" && part.keys.some((k) => marks.keys.has(k)));
+  }
+  for (const row of $$(".side .kv")) {
+    const key = row.dataset.key, hit = changed.has(key);
+    row.lastElementChild.textContent = hit ? `${fmt(key, base[key])} → ${fmt(key, state[key])}` : fmt(key, state[key]);
+    row.classList.toggle("changed", hit);
+    row.classList.toggle("refused", marks.kind === "refused" && marks.keys.has(key));
+    row.classList.toggle("asked", marks.kind === "asked" && marks.keys.has(key));
+  }
+  return changed;
+}
+
+/* 도구가 건드리는 상태 키. vss 템플릿의 {zone} 같은 자리를 instance_map 과 인자로 채운다. */
+function toolKeys(name, args = {}) {
+  const spec = S.specs[name];
+  if (!spec || !spec.vss) return [];
+  if (typeof spec.vss !== "string") return args.field && spec.vss[args.field] ? [spec.vss[args.field]] : Object.values(spec.vss);
+  const m = spec.vss.match(/\{(\w+)\}/);
+  if (!m) return [spec.vss];
+  const map = S.meta.instance_map[m[1]] || {};
+  const chosen = args[m[1]] ?? (spec.parameters.properties[m[1]] || {}).default;
+  let names = Object.keys(map);
+  if (chosen && map[chosen]) names = [chosen];
+  else if (chosen && chosen !== "all") names = names.filter((n) => n.startsWith(chosen));
+  return names.map((n) => spec.vss.replace(m[0], map[n])).filter((k) => k in S.meta.initial_state);
+}
+
+function showBubble(kind, title, text, keys) {
+  const bubble = $("#bubble"), stage = $(".stage").getBoundingClientRect(), svg = $("#car").getBoundingClientRect();
+  if (!text) { bubble.className = ""; return; }
+  let anchor = [220, 150];
+  const part = Object.values(PARTS).find((p) => p.keys.some((k) => keys.has(k)));
+  if (part && part.id !== "screen") {
+    // 좌석 줄에 있는 부위는 그 줄 바로 위 빈 곳에 띄워 공조 표기를 가리지 않게 한다
+    const row = (part.id.match(/Row(\d+)/) || [])[1];
+    anchor = [part.anchor[0], row === "1" ? 178 : row === "2" ? 338 : part.anchor[1]];
+  }
+  const [vx, vy, vw, vh] = $("#car").getAttribute("viewBox").split(" ").map(Number);
+  const scale = Math.min(svg.width / vw, svg.height / vh);
+  const ox = svg.left + (svg.width - vw * scale) / 2, oy = svg.top + (svg.height - vh * scale) / 2;
+  // 말풍선이 옆 목록을 가리지 않게 차량 영역 안에 둔다
+  const x = Math.max(svg.left - stage.left + 138, Math.min(svg.right - stage.left - 138, ox + (anchor[0] - vx) * scale - stage.left));
+  bubble.style.left = `${x}px`;
+  bubble.style.top = `${Math.max(92, oy + (anchor[1] - vy) * scale - stage.top)}px`;
+  bubble.innerHTML = `<b>${esc(title)}</b>${esc(text)}`;
+  bubble.className = `show ${kind}`;
+}
+
+function showStart() {
+  S.shown = null;
+  paint(S.start);
+  $("#bubble").className = "";
+  $("#changes").innerHTML = overrides().length ? overrides().map(([k, v]) => `<span class="chip">시작 ${esc(label(k))} ${esc(fmt(k, v))}</span>`).join("") : "";
+  syncControls();
+}
+function showRecord(run) {
+  const record = run.record, actual = record.actual;
+  S.shown = run;
+  const selected = actual.selected_tool;
+  const keys = new Set(selected ? toolKeys(selected, actual.selected_args || {}) : []);
+  const kind = actual.outcome;
+  const changed = paint(record.state_after, record.state_initial, { kind, keys });
+  const chips = [...changed].map((k) => `<span class="chip blue">${esc(label(k))} ${esc(fmt(k, record.state_initial[k]))} → ${esc(fmt(k, record.state_after[k]))}</span>`);
+  if (kind === "refused") chips.push(`<span class="chip red">거절 · ${esc(actual.code || "사유 없음")}</span>`);
+  if (kind === "asked") chips.push(`<span class="chip yellow">되묻기${selected ? " · " + esc(selected) : " · 모델이 직접"}</span>`);
+  if (!chips.length) chips.push(`<span class="chip">상태 변화 없음</span>`);
+  $("#changes").innerHTML = chips.join("");
+  const reason = kind === "refused" ? (S.meta.error_messages[actual.code || ""] || actual.final_answer) : actual.final_answer;
+  showBubble(kind, OUTCOME[kind] || kind, record.error || reason, kind === "executed" ? changed : keys);
+  syncControls(record.state_initial);
+}
+
+/* ================= 시작 상태 조작 ================= */
+const SPEED = "Vehicle.Speed", POWER = "Vehicle.LowVoltageSystemState";
+function overrides() { return Object.entries(S.start).filter(([k, v]) => json(v) !== json(S.meta.initial_state[k])); }
+function syncControls(state = S.start) {
+  $("#speed").value = state[SPEED] ?? 0;
+  $("#speedOut").textContent = `${state[SPEED] ?? 0} km/h`;
+  for (const b of $$("#power button")) b.classList.toggle("sel", (b.dataset.v === "OFF") === (state[POWER] === "OFF"));
+}
+function setStart(patch, keepPick = false) {
+  Object.assign(S.start, patch);
+  if (!keepPick) unpick();
+  showStart();
+}
+function unpick() { if (S.picked) { S.picked = null; renderPicked(); renderCases(); } }
+
+/* ================= 실행 ================= */
+async function api(path, body) {
+  const response = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : undefined);
+  if (!response.ok) { const detail = await response.json().catch(() => ({})); throw new Error(detail.detail || `요청 실패 (${response.status})`); }
+  return response;
+}
+/* POST /api/run 의 SSE 를 읽어 이벤트마다 on(name, data) 를 부른다. */
+async function stream(body, on) {
+  const response = await api("/api/run", body);
+  const reader = response.body.getReader(), decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let cut;
+    while ((cut = buffer.indexOf("\n\n")) >= 0) {
+      const block = buffer.slice(0, cut); buffer = buffer.slice(cut + 2);
+      const name = (block.match(/^event: (.*)$/m) || [])[1], data = (block.match(/^data: (.*)$/m) || [])[1];
+      if (name && data) await on(name, JSON.parse(data));
+    }
+  }
+}
+function newFlow(turns) { return { turns: turns.map((utt) => ({ utt, nodes: {} })) }; }
+function nodeClass(node, update) {
+  const result = update.tool_result;
+  if (node === "validate") return update.ask ? "ask" : result && result.status === "error" ? "refuse" : "lit";
+  if (node === "execute") return result && result.status === "ok" ? "run" : "refuse";
+  if (node === "tool_select" && update.trace && update.trace.outcome === "asked") return "ask";
+  return "lit";
+}
+async function runCase(body, { animate = true } = {}) {
+  let run = null, flow = null, error = null;
+  await stream(body, async (name, data) => {
+    if (name === "start") {
+      flow = newFlow(data.case.turns || [data.case.utt]);
+      flow.case = data.case;
+      if (animate) { S.last = { flow, pending: true }; S.flowSel = null; renderFlow(); }
+    } else if (name === "node") {
+      flow.turns[data.turn].nodes[data.node] = { update: data.update, cls: nodeClass(data.node, data.update) };
+      if (data.node === "respond") {
+        flow.turns[data.turn].done = true;
+        if (animate) { addChat("bot", data.update.final_answer, data.turn); }
+      }
+      if (animate) { S.flowSel = [data.turn, data.node]; renderFlow(); await sleep(260); }
+    } else if (name === "result") {
+      run = { ...data, flow, case: flow.case };
+    } else if (name === "error") {
+      error = data.message;
+    }
+  });
+  if (error) throw new Error(error);
+  return run;
+}
+function adopt(run) {
+  S.last = run;
+  showRecord(run);
+  renderFlow();
+  renderCompare();
+  renderResult();
+}
+
+/* --- 자유 입력: 대화 이어가기 --- */
+function addChat(role, text, turn) { S.chat.push({ role, text, turn }); renderChat(); }
+function renderChat() {
+  $("#chat").innerHTML = S.chat.map((m) => `<div class="msg ${m.role}${m.pending ? " pending" : ""}">${esc(m.text)}</div>`).join("");
+  $("#chat").scrollTop = 1e6;
+}
+async function send() {
+  const text = $("#utter").value.trim();
+  if (!text || S.busy) return;
+  const turns = [...S.turns, text];
+  const picked = S.picked;
+  const sameCase = picked && json(turns) === json(picked.turns || [picked.utt]) && json(Object.fromEntries(overrides())) === json(picked.state || {});
+  const body = sameCase ? { file: picked.file, id: picked.id } : { turns, state: Object.fromEntries(overrides()) };
+  if (!sameCase) unpick();
+  S.chat = turns.map((t) => ({ role: "user", text: t }));
+  // 지난 턴의 답은 다시 실행되면서 채워진다
+  renderChat();
+  $("#utter").value = "";
+  await guard(async () => {
+    tab("flow");
+    const run = await runCase(body);
+    // 말풍선을 발화·응답 순서로 다시 맞춘다
+    S.chat = turns.flatMap((t, i) => [{ role: "user", text: t }, { role: "bot", text: (run.flow.turns[i].nodes.respond || { update: {} }).update.final_answer || "" }]);
+    renderChat();
+    S.turns = turns;
+    adopt(run);
+  });
+}
+function newChat() { S.turns = []; S.chat = []; renderChat(); unpick(); $("#utter").value = ""; $("#utter").focus(); showStart(); }
+async function guard(work) {
+  if (S.busy) return;
+  S.busy = true; $("#send").disabled = true; $("#runAll").disabled = true;
+  try { await work(); } catch (e) { toast(e.message); } finally { S.busy = false; $("#send").disabled = false; $("#runAll").disabled = false; }
+}
+
+/* --- 평가셋 목록 --- */
+function filtered() {
+  const { type, domain, q } = S.filter;
+  return S.cases.filter((c) => (!type || c.type === type) && (!domain || c.domain === domain) && (!q || `${c.id} ${(c.turns || [c.utt]).join(" ")}`.toLowerCase().includes(q.toLowerCase())));
+}
+function renderFilters() {
+  const uniq = (key) => [...new Set(S.cases.map((c) => c[key]))].sort();
+  const options = (key, all) => `<option value="">${all}</option>` + uniq(key).map((v) => `<option${S.filter[key] === v ? " selected" : ""}>${esc(v)}</option>`).join("");
+  for (const id of ["filters-run", "filters-eval"]) {
+    $("#" + id).innerHTML = `<select data-f="type">${options("type", "유형 전체")}</select><select data-f="domain">${options("domain", "도메인 전체")}</select>
+      <input type="text" data-f="q" class="grow" placeholder="검색 (id, 발화)" value="${esc(S.filter.q)}"><span class="muted">${filtered().length}건</span>`;
+  }
+}
+function onFilter(e) {
+  const f = e.target.dataset.f;
+  if (!f) return;
+  S.filter[f] = e.target.value;
+  const pos = e.target.selectionStart, host = e.target.parentElement.id;
+  renderFilters(); renderCases(); renderRows();
+  if (f === "q") { const input = $(`#${host} [data-f=q]`); input.focus(); input.setSelectionRange(pos, pos); }
+}
+const expectedText = (e) => !e ? "-" : e.ask ? "되묻기" : e.tool ? `${e.tool}${e.args && Object.keys(e.args).length ? " " + json(e.args) : ""}` : "도구 없음";
+function renderCases() {
+  $("#cases").innerHTML = filtered().map((c) => `<div class="case${S.picked && S.picked.file === c.file && S.picked.id === c.id ? " sel" : ""}" data-file="${esc(c.file)}" data-id="${esc(c.id)}">
+    <span class="mono">${esc(c.id)}</span><span class="muted">${esc(c.type)}</span><span class="utt">${esc((c.turns || [c.utt]).join(" → "))}</span></div>`).join("") || `<div class="empty">조건에 맞는 건이 없습니다.</div>`;
+}
+function pick(file, id) {
+  const c = S.cases.find((x) => x.file === file && x.id === id);
+  if (!c) return;
+  S.picked = c;
+  const turns = c.turns || [c.utt];
+  S.turns = turns.slice(0, -1);
+  S.chat = S.turns.map((t) => ({ role: "user", text: t, pending: true }));
+  renderChat();
+  $("#utter").value = turns[turns.length - 1];
+  S.start = { ...S.meta.initial_state, ...(c.state || {}) };
+  showStart(); renderPicked(); renderCases();
+}
+function renderPicked() {
+  const c = S.picked, box = $("#picked");
+  box.hidden = !c;
+  if (c) box.innerHTML = `<span class="mono">${esc(c.id)}</span><span class="pill">${esc(c.type)}</span><span class="grow muted">정답 ${esc(expectedText(c.expected))}</span><span class="muted">${esc(c.file)}</span>`;
+}
+
+/* ================= 흐름 ================= */
+function domainFile(tool) { const spec = S.specs[tool]; return spec ? `tools/${spec.domain}.py` : null; }
+function renderFlow() {
+  const run = S.last;
+  if (!run || !run.flow) return;
+  $("#flow").innerHTML = run.flow.turns.map((turn, t) => `<div class="turn"><h5><span>${run.flow.turns.length > 1 ? `${t + 1}턴` : "발화"}</span>${esc(turn.utt)}</h5><div class="nodes">` +
+    NODES.map(([id, title, hint]) => {
+      const node = turn.nodes[id];
+      const cls = node ? node.cls : turn.done ? "skipped" : "";
+      const sel = S.flowSel && S.flowSel[0] === t && S.flowSel[1] === id ? " sel" : "";
+      return `<div class="node ${cls}${sel}" data-turn="${t}" data-node="${id}"><strong>${title}</strong><small>${esc(node ? nodeNote(id, node.update) : turn.done ? "건너뜀" : hint)}</small></div>`;
+    }).join("") + `</div></div>`).join("");
+  renderDetail();
+}
+function nodeNote(id, u) {
+  const r = u.tool_result;
+  if (id === "tool_select") return u.tool_call ? u.tool_call.name : u.trace && u.trace.outcome === "asked" ? "모델이 직접 되물음" : "도구 없음";
+  if (id === "validate") return u.ask ? "되묻기 · missing_arg" : r && r.status === "error" ? `거절 · ${r.code}` : "통과";
+  if (id === "execute") return r && r.status === "ok" ? `완료 · ${Object.keys(r.state_after).length}개 변경` : `거절 · ${r ? r.code || "오류" : ""}`;
+  return u.final_answer || "";
+}
+function renderDetail() {
+  const box = $("#detail"), run = S.last;
+  if (!run || !S.flowSel) { box.hidden = true; return; }
+  const [t, id] = S.flowSel, turn = run.flow.turns[t], node = turn.nodes[id];
+  if (!node) { box.hidden = true; return; }
+  const u = node.update, r = u.tool_result, call = u.tool_call || (turn.nodes.validate && turn.nodes.validate.update.tool_call) || (turn.nodes.tool_select.update.tool_call);
+  const rows = [], files = [];
+  const add = (k, v, mono) => rows.push(`<dt>${k}</dt><dd${mono ? ' class="mono"' : ""}>${esc(v)}</dd>`);
+  if (id === "tool_select") {
+    add("받은 발화", turn.utt);
+    add("고른 도구", u.tool_call ? u.tool_call.name : "없음", true);
+    if (u.tool_call) add("인자", json(u.tool_call.args), true);
+    else add("모델 문장", u.final_answer || "(없음)");
+    add("설명", "모델 호출은 턴당 이 한 번뿐입니다. 필수 인자를 모르면 null 로 넘기게 되어 있습니다.");
+    files.push("agent/graph.py · tool_select", "agent/prompts.py · SYSTEM", "ontology/generated/tools.json");
+  } else if (id === "validate") {
+    add("판정", u.ask ? "되묻기" : r && r.status === "error" ? "거절" : "통과");
+    if (r && r.status === "error") { add("코드", r.code, true); add("사유", r.message); }
+    if (u.ask) add("되묻는 문장", u.ask);
+    if (u.tool_call) add("정리된 인자", json(u.tool_call.args), true);
+    if (call && S.specs[call.name]) add("조건", (S.specs[call.name].precondition || []).join(", ") || "없음", true);
+    add("설명", "모르는 도구 → 필수 인자 누락 → 범위·타입 → precondition 순서로 검사합니다. 모델을 부르지 않습니다.");
+    files.push("agent/graph.py · validate", "ontology/generated/tools.json", "sim/state.py · check");
+  } else if (id === "execute") {
+    if (call) { add("호출", `${call.name} ${json(call.args)}`, true); }
+    add("결과", r ? `${r.status}${r.code ? " · " + r.code : ""}` : "-", true);
+    if (r && r.status === "ok") for (const [k, v] of Object.entries(r.state_after)) add(label(k), `${fmt(k, v)}`, false);
+    if (r && r.message) add("사유", r.message);
+    files.push("tools/server.py", call && domainFile(call.name) ? domainFile(call.name) : "tools/<domain>.py", "sim/state.py");
+  } else {
+    const prev = turn.nodes.execute || turn.nodes.validate || turn.nodes.tool_select;
+    const pu = prev.update, pr = pu.tool_result;
+    const source = pu.ask && turn.nodes.validate && turn.nodes.validate.update.ask ? "vehicle.yaml 의 ask_prompt (고정 문장)"
+      : pr && pr.status === "error" ? "ERROR_MESSAGES (에러 코드별 고정 문장)"
+      : pr && pr.status === "ok" ? "완료 템플릿 (도메인 이름 + 바뀐 값)" : "모델이 준 문장 그대로";
+    add("응답 문장", u.final_answer);
+    add("문장 출처", source);
+    add("설명", "응답을 만들 때 모델을 다시 부르지 않습니다.");
+    files.push("agent/graph.py · respond", "agent/prompts.py · ERROR_MESSAGES", "ontology/vehicle.yaml · ask_prompt");
+  }
+  rows.push(`<dt>담당 파일</dt><dd class="files mono">${files.map((f) => `<span>${esc(f)}</span>`).join("")}</dd>`);
+  box.innerHTML = rows.join(""); box.hidden = false;
+}
+
+/* ================= 평가 ================= */
+const mark = (ok, text) => `<span class="mark ${ok ? "ok" : "no"}">${text}</span>`;
+const allOk = (score) => score && score.tool_ok && score.arg_ok && score.task_ok;
+function renderCompare() {
+  const run = S.last, box = $("#compare");
+  if (!run || !run.record) return;
+  const a = run.record.actual, e = run.record.expected;
+  const actual = a.outcome === "asked" ? "되묻기" : a.tool ? `${a.tool} ${json(a.args)}` : a.selected_tool ? `실행 안 함 (고른 도구 ${a.selected_tool})` : "도구 없음";
+  box.innerHTML = `<div class="compare"><div><h3>정답</h3><div class="mono">${esc(expectedText(e))}</div></div>
+    <div><h3>실제</h3><div class="mono">${esc(actual)}</div></div>
+    <div class="marks">${run.score ? mark(run.score.tool_ok, "도구") + mark(run.score.arg_ok, "인자") + mark(run.score.task_ok, "상태") : `<span class="muted">정답이 없는 자유 입력이라 채점하지 않습니다</span>`}</div></div>`;
+}
+function renderRows() {
+  const ids = new Set(filtered().map((c) => `${c.file}|${c.id}`));
+  const rows = S.rows.filter((r) => ids.has(`${r.record.file}|${r.record.id}`) && (!S.failOnly || !allOk(r.score)));
+  const ox = (ok) => (ok ? `<span class="o">O</span>` : `<span class="x">X</span>`);
+  $("#rows").innerHTML = rows.map((r) => { const a = r.record.actual, s = r.score; return `<tr data-run="${r.run_id}" class="${S.last && S.last.run_id === r.run_id ? "sel" : ""}">
+    <td class="mono">${esc(r.record.id)}</td><td class="muted">${esc(r.record.type)}</td><td title="${esc(r.record.turns.join(" → "))}">${esc(r.record.turns.join(" → "))}</td>
+    <td class="mono" title="${esc(expectedText(r.record.expected))}">${esc(expectedText(r.record.expected))}</td><td class="mono">${esc(a.tool || a.selected_tool || "-")}</td>
+    <td><span class="pill ${a.outcome}">${OUTCOME[a.outcome] || a.outcome}</span></td><td>${ox(s.tool_ok)}</td><td>${ox(s.arg_ok)}</td><td>${ox(s.task_ok)}</td></tr>`; }).join("");
+  const types = {};
+  for (const r of S.rows) { const t = (types[r.record.type] ||= [0, 0]); t[1]++; if (allOk(r.score)) t[0]++; }
+  const done = S.rows.length, pass = S.rows.filter((r) => allOk(r.score)).length;
+  $("#summary").innerHTML = done ? `<span class="chip"><b>전체 ${pass}/${done}</b></span>` + Object.entries(types).sort().map(([t, [p, n]]) => `<span class="chip">${esc(t)} ${p}/${n}</span>`).join("") : "";
+}
+async function runAll() {
+  const list = filtered();
+  if (!list.length) return toast("실행할 건이 없습니다");
+  await guard(async () => {
+    S.batch = { on: true, stop: false }; $("#stopAll").disabled = false;
+    S.rows = S.rows.filter((r) => !list.some((c) => c.file === r.record.file && c.id === r.record.id));
+    for (let i = 0; i < list.length && !S.batch.stop; i++) {
+      $("#progress").textContent = `${i + 1} / ${list.length} 실행 중`;
+      const run = await runCase({ file: list[i].file, id: list[i].id }, { animate: false });
+      S.rows.push(run); S.flowSel = null; adopt(run); renderRows();
+    }
+    $("#progress").textContent = S.batch.stop ? "중단했습니다" : `${list.length}건 완료`;
+    S.batch.on = false; $("#stopAll").disabled = true;
+  });
+}
+
+/* ================= 결과와 검수 기록 ================= */
+function renderResult() {
+  const run = S.last;
+  if (!run || !run.record) return;
+  const a = run.record.actual, seconds = run.record.latencies.reduce((x, y) => x + y, 0);
+  $("#outcome").className = `pill ${a.outcome}`; $("#outcome").textContent = OUTCOME[a.outcome] || a.outcome;
+  $("#answer").className = "grow"; $("#answer").textContent = run.record.error || a.final_answer || "(응답 없음)";
+  $("#latency").textContent = `${seconds.toFixed(2)}초 (참고용) · ${run.model}`;
+  for (const b of $$(".save")) b.disabled = false;
+  const adhoc = run.record.expected === null;
+  $("#export").hidden = !adhoc; $("#export").disabled = !adhoc;
+}
+function reviewer() {
+  const name = $("#reviewer").value.trim();
+  if (!name) { $("#reviewer").focus(); toast("오른쪽 위에 검수자 이름을 먼저 입력해 주세요"); }
+  return name;
+}
+async function save(category) {
+  const name = reviewer();
+  if (!name || !S.last) return;
+  try {
+    const out = await (await api("/api/findings", { reviewer: name, run_id: S.last.run_id, category, memo: $("#memo").value })).json();
+    $("#memo").value = ""; toast(`${S.meta.categories[category]} 기록 → ${out.saved}`);
+  } catch (e) { toast(e.message); }
+}
+async function exportCase() {
+  const name = reviewer();
+  if (!name || !S.last) return;
+  try { const out = await (await api("/api/candidates", { reviewer: name, run_id: S.last.run_id })).json(); toast(`초안 저장 → ${out.saved} (expected 는 사람이 확인)`); }
+  catch (e) { toast(e.message); }
+}
+let toastTimer;
+function toast(text) { const t = $("#toast"); t.textContent = text; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 3200); }
+function tab(name) { for (const b of $$(".tabs button")) b.classList.toggle("sel", b.dataset.tab === name); for (const p of $$(".panel")) p.classList.toggle("sel", p.id === `tab-${name}`); }
+function renderModel(status) {
+  const box = $("#modelStatus");
+  box.className = `status ${status.ready ? "ready" : status.error ? "error" : ""}`;
+  box.lastElementChild.textContent = status.ready ? "준비됨" : status.error || "준비 중";
+  box.title = status.error || "";
+  if (status.id && document.activeElement !== $("#model")) $("#model").value = status.id;
+}
+
+/* ================= 시작 ================= */
+async function init() {
+  S.meta = await (await api("/api/meta")).json();
+  S.cases = await (await api("/api/cases")).json();
+  S.specs = Object.fromEntries(S.meta.tools.map((t) => [t.name, t]));
+  S.start = { ...S.meta.initial_state };
+  $("#reviewer").value = localStorage.getItem("reviewer") || "";
+  buildCar(); showStart(); renderModel(S.meta.model); renderFilters(); renderCases();
+
+  $("#reviewer").addEventListener("input", (e) => localStorage.setItem("reviewer", e.target.value.trim()));
+  $("#applyModel").addEventListener("click", async () => {
+    renderModel({ ready: false, error: null });
+    try { renderModel(await (await api("/api/model", { model: $("#model").value })).json()); } catch (e) { toast(e.message); }
+  });
+  $("#model").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#applyModel").click(); });
+  $("#speed").addEventListener("input", (e) => setStart({ [SPEED]: +e.target.value }));
+  $("#power").addEventListener("click", (e) => { if (e.target.dataset.v) setStart({ [POWER]: e.target.dataset.v }); });
+  $("#reset").addEventListener("click", () => { S.start = { ...S.meta.initial_state }; unpick(); showStart(); });
+  $(".tabs").addEventListener("click", (e) => { if (e.target.dataset.tab) tab(e.target.dataset.tab); });
+  $("#send").addEventListener("click", send);
+  $("#utter").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) send(); });
+  $("#newChat").addEventListener("click", newChat);
+  $("#cases").addEventListener("click", (e) => { const row = e.target.closest(".case"); if (row) pick(row.dataset.file, row.dataset.id); });
+  for (const id of ["filters-run", "filters-eval"]) $("#" + id).addEventListener("input", onFilter);
+  $("#flow").addEventListener("click", (e) => { const n = e.target.closest(".node"); if (n) { S.flowSel = [+n.dataset.turn, n.dataset.node]; renderFlow(); } });
+  $("#runAll").addEventListener("click", runAll);
+  $("#stopAll").addEventListener("click", () => { S.batch.stop = true; $("#stopAll").disabled = true; });
+  $("#failOnly").addEventListener("change", (e) => { S.failOnly = e.target.checked; renderRows(); });
+  $("#rows").addEventListener("click", (e) => { const tr = e.target.closest("tr"); const run = tr && S.rows.find((r) => r.run_id === tr.dataset.run); if (run) { S.flowSel = null; adopt(run); renderRows(); } });
+  for (const b of $$(".save")) b.addEventListener("click", () => save(b.dataset.cat));
+  $("#export").addEventListener("click", exportCase);
+  window.addEventListener("resize", () => { if (S.shown) showRecord(S.shown); });
+}
+init().catch((e) => toast(`불러오지 못했습니다: ${e.message}`));
+</script>
+</body>
+</html>

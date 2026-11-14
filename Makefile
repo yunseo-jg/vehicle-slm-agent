@@ -1,4 +1,4 @@
-.PHONY: schema test lint server eval validate-eval
+.PHONY: schema test lint server eval validate-eval dashboard
 
 schema:
 	uv run python ontology/build_schema.py
@@ -17,3 +17,6 @@ eval:
 
 validate-eval:
 	uv run python eval/validate_dataset.py eval/data/*.jsonl
+
+dashboard:
+	uv run --extra dashboard uvicorn dashboard.server:app --port 8000

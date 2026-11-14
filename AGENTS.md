@@ -29,6 +29,8 @@ AI 코딩 도구(Cursor, Claude Code, Codex, Copilot 등)가 이 레포에서 �
 | `agent/prompts.py` | 시스템 프롬프트, few-shot | |
 | `eval/data/*.jsonl` | 평가셋 | 원본 데이터 |
 | `eval/run_eval.py`, `eval/score.py` | 실행기, 채점기 | |
+| `eval/review/` | 대시보드에서 남긴 검수 기록·평가셋 초안 (사람별 jsonl). 커밋 대상 | 평가셋 본문 |
+| `dashboard/` | 검수용 로컬 대시보드 (`make dashboard`). 실행·채점은 `eval/`의 함수를 그대로 호출 | 실행·채점 로직 |
 | `reports/` | 실험 결과 md, csv | 코드 |
 | `training/` | LoRA 데이터 합성, 학습 스크립트·노트북 | 모델 가중치 |
 | `data/raw/` | 로컬 전용. 커밋 금지 | |
@@ -45,6 +47,7 @@ make lint               # ruff check + format --check
 make server             # MCP 서버 stdio 실행
 make eval               # 평가 실행 (eval/run_eval.py)
 make validate-eval      # 평가셋과 온톨로지 대조
+make dashboard          # 검수용 대시보드 (http://localhost:8000)
 ```
 
 코드를 바꿨으면 `make lint && make test`가 통과하는지 확인하고 끝낸다.

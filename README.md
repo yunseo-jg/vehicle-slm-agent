@@ -51,7 +51,8 @@ KUBIG 26-2 AI Agent 개발 1팀 / 2026.09 ~ 2026.12
 ├── tools/             MCP 도구 서버 (server.py) 와 도메인별 도구 구현
 ├── sim/               차량 시뮬레이터 (state.py)
 ├── agent/             LangGraph 그래프, 프롬프트
-├── eval/              평가셋(data/), 실행기(run_eval.py), 채점기(score.py)
+├── eval/              평가셋(data/), 실행기(run_eval.py), 채점기(score.py), 검수 기록(review/)
+├── dashboard/         검수용 로컬 대시보드. make dashboard → http://localhost:8000
 ├── training/          LoRA 학습 데이터 합성, 학습 노트북
 ├── reports/           실험 결과. 날짜별 md + 표
 ├── docs/              아키텍처 문서, 설계 결정 기록(ADR)

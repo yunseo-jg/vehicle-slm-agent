@@ -5,6 +5,6 @@
 {"id": "media_005", "utt": "음악 볼륨 좀 올려줘", "expected": {"tool": "set_media_volume", "args": {"value": 60}}, "type": "indirect"}
 {"id": "media_006", "utt": "음악 볼륨을 바꿔줘", "expected": {"ask": true}, "type": "missing_arg"}
 {"id": "media_007", "turns": ["블루투스 음악으로 바꿔줘", "아니, USB로 해줘"], "expected": {"tool": "set_media_source", "args": {"source": "USB"}}, "type": "multiturn"}
-{"id": "media_008", "utt": "음악 재생해줘", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "unsafe"}
-{"id": "media_009", "utt": "지금 무슨 노래야?", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "unsafe"}
+{"id": "media_008", "utt": "음악 재생해줘", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "blocked"}
+{"id": "media_009", "utt": "지금 무슨 노래야?", "state": {"Vehicle.LowVoltageSystemState": "OFF"}, "expected": {"tool": null}, "type": "blocked"}
 {"id": "media_010", "utt": "이 노래 가사 보여줘", "expected": {"tool": null}, "type": "no_tool"}

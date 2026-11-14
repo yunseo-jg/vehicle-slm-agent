@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS = ROOT / "ontology" / "generated" / "tools.json"
-TYPES = {"direct", "indirect", "missing_arg", "multiturn", "unsafe", "no_tool"}
+TYPES = {"direct", "indirect", "missing_arg", "multiturn", "unsafe", "blocked", "no_tool"}
 
 
 def load_tools() -> dict[str, dict]:

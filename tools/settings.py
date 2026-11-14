@@ -64,8 +64,9 @@ def _is_bool(value: object) -> bool:
 
 
 def set_window_position(state: VehicleState, position: int, window: str = "all") -> dict:
-    """Open or close windows to a position (0 closed, 100 fully open). Use for any request
-    to open, close, lower, or raise a window. Do not use for doors or the sunroof."""
+    """Set window position (0 closed, 100 fully open); lowering a window (내려) opens it toward
+    100 and raising it (올려) closes it toward 0. Use for any request to open, close, lower,
+    raise, or adjust a window. Do not use for doors or the sunroof."""
     if window not in WINDOWS:
         return err("out_of_range", f"window must be one of {sorted(WINDOWS)}")
     minimum = POSITION_RULE["minimum"]

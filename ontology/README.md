@@ -17,6 +17,7 @@ vehicle.yaml ──build_schema.py──▶ generated/tools.json          (MCP �
 | `vss` | O | VSS 경로. `{zone}` 같은 자리표시자는 `instance_map`으로 펼침. get 계열은 `field: path` 맵. 없으면 `null` |
 | `ext` | | VSS에 없는 확장 기능이면 `true` |
 | `params` | O | 파라미터. `type`(int/float/string/bool/enum), `values`, `min`, `max`, `unit`, `default`, `required` |
+| `ask_prompt` | O | required 인자가 빠졌을 때 되묻는 문장. `{인자 이름: 한국어 한 문장}`. required 인자마다 하나 |
 | `precondition` | O | `power_on`, `parked`, `speed_below_N`. 빈 리스트 가능 |
 | `initial` | | 시뮬레이터 초기값. get 계열은 `field: 값` 맵 |
 | `ko` | O | 예시 발화 3개 이상. 직접 명령과 간접 표현 섞기 |

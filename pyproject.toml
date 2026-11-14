@@ -22,9 +22,12 @@ local = ["langchain-ollama>=0.2"]
 trace = ["langfuse>=2.0"]
 # 매뉴얼 RAG 도구
 rag = ["chromadb>=0.5", "pypdf>=4.0"]
+# 검수용 로컬 대시보드 (make dashboard). fastapi 는 API·SSE, uvicorn 은 실행
+dashboard = ["fastapi>=0.115", "uvicorn>=0.30"]
 
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.6"]
+# fastapi, httpx: tests/test_dashboard.py 가 대시보드 서버를 TestClient 로 띄운다
+dev = ["pytest>=8.0", "ruff>=0.6", "fastapi>=0.115", "httpx>=0.27"]
 
 [tool.ruff]
 line-length = 100

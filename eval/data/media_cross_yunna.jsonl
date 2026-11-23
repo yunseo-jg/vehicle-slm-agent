@@ -1,0 +1,5 @@
+{"id": "media_401", "utt": "지금 나오는 노래 부른 사람 이름 알려 줘", "expected": {"tool": "get_media_info", "args": {"field": "artist"}}, "type": "direct"}
+{"id": "media_402", "utt": "이 노래 좋은데 제목이 생각이 안 나", "expected": {"tool": "get_media_info", "args": {"field": "track"}}, "type": "indirect"}
+{"id": "media_403", "utt": "지금 나오는 노래 정보 좀 알려 줘", "expected": {"ask": true}, "type": "missing_arg"}
+{"id": "media_404", "turns": ["이 노래 별로다, 다음 거 틀어", "아 방금 게 더 나았어, 다시 돌아가"], "state": {"Vehicle.Cabin.Infotainment.Media.Action": "PLAY"}, "expected": {"tool": "set_media_action", "args": {"action": "SKIP_BACKWARD"}}, "type": "multiturn"}
+{"id": "media_405", "utt": "이 노래 플레이리스트에 저장해 줘", "expected": {"tool": null}, "type": "no_tool"}
